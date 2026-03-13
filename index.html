@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RK Music Hub | KMNZ × VESPERBELL × XIDEN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050508;--sf:#0d0d14;--sf2:#111120;--sf3:#0a0a12;
+  --bd:#1a1a2e;--bd2:#252540;--bd3:#2e2e50;
+  --k1:#ff6b35;--k2:#ff3a6e;
+  --v1:#7b61ff;--v2:#00d4ff;
+  --x1:#00e5b0;--x2:#00aaff;
+  --co:#c878ff;
+  --tx:#e8e8f0;--mu:#5a5a78;--mu2:#8888aa;
+  --sb:200px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--tx);
+  font-family:'Noto Sans JP',sans-serif;
+  min-height:100vh;overflow-x:hidden;
+  display:flex;flex-direction:column;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ══ TOPBAR ══ */
+.topbar{
+  position:relative;z-index:20;
+  background:rgba(5,5,8,.95);border-bottom:1px solid var(--bd);
+  backdrop-filter:blur(14px);
+  padding:0 16px;height:52px;
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.logo{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;letter-spacing:.05em;white-space:nowrap}
+.kc{background:linear-gradient(135deg,var(--k1),var(--k2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.vc{background:linear-gradient(135deg,var(--v1),var(--v2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.xc{background:linear-gradient(135deg,var(--x1),var(--x2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.dc{color:var(--mu);margin:0 2px;font-size:13px}
+.logo-sub{font-size:10px;letter-spacing:.15em;color:var(--mu);text-transform:uppercase}
+.topbar-spacer{flex:1}
+.sb-toggle{display:none;background:none;border:1px solid var(--bd2);color:var(--mu2);padding:4px 9px;border-radius:3px;cursor:pointer;font-size:15px;line-height:1}
+
+/* ══ LAYOUT ══ */
+.layout{display:flex;flex:1;min-height:0;position:relative;z-index:1}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:var(--sb);flex-shrink:0;
+  background:var(--sf3);border-right:1px solid var(--bd);
+  position:sticky;top:52px;height:calc(100vh - 52px);
+  overflow-y:auto;display:flex;flex-direction:column;
+  transition:transform .28s ease;
+}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+
+/* sidebar sections */
+.sbs{border-bottom:1px solid var(--bd);padding:10px 0}
+.sbs:last-child{border-bottom:none}
+.sbh{
+  font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:.35em;text-transform:uppercase;color:var(--mu);
+  padding:0 13px 7px;
+}
+
+/* group header row — clickable */
+.sb-group{
+  width:100%;display:flex;align-items:center;gap:8px;
+  padding:8px 13px 6px;background:none;border:none;
+  cursor:pointer;transition:background .14s;
+  border-left:3px solid transparent;text-align:left;
+}
+.sb-group:hover{background:rgba(255,255,255,.03)}
+.sb-group.gk.on{background:rgba(255,107,53,.07);border-left-color:var(--k1)}
+.sb-group.gv.on{background:rgba(123,97,255,.07);border-left-color:var(--v1)}
+.sb-group.gx.on{background:rgba(0,229,176,.07);border-left-color:var(--x1)}
+.sb-group.gc.on{background:rgba(200,120,255,.07);border-left-color:var(--co)}
+.sb-gname{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em}
+.sb-gcnt{font-family:'Rajdhani',sans-serif;font-size:9px;color:var(--mu);margin-left:auto}
+.sb-gsub{font-size:9px;color:var(--mu);letter-spacing:.03em;padding:0 13px 4px;display:none}
+.sb-group.on + .sb-gsub{display:block}
+
+/* member rows */
+.sb-members{padding:2px 0 6px;display:none}
+.sb-group.on ~ .sb-members{display:block}
+.sb-mem{
+  width:100%;display:flex;align-items:center;gap:7px;
+  padding:5px 13px 5px 22px;background:none;border:none;
+  cursor:pointer;transition:background .13s;text-align:left;
+  border-left:3px solid transparent;
+}
+.sb-mem:hover{background:rgba(255,255,255,.025)}
+.sb-mem.on{background:rgba(255,255,255,.035)}
+.sb-mem .pip{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;font-family:'Rajdhani',sans-serif;flex-shrink:0}
+.pl{background:#ffc832;color:#000}.pt{background:#ff78c8;color:#000}
+.pn{background:#64a0ff;color:#000}.py{background:#32b4ff;color:#000}
+.pk{background:#ff8c50;color:#000}.px{background:var(--x1);color:#000}
+.sb-mem-label{font-size:11px;color:var(--mu2);font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.04em}
+.sb-mem.on .sb-mem-label{color:var(--tx)}
+
+/* type filter chips */
+.sb-type-row{display:flex;gap:4px;padding:4px 13px 6px}
+.tchip{
+  font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;border:1px solid var(--bd2);background:transparent;
+  color:var(--mu);border-radius:2px;cursor:pointer;transition:all .13s;
+}
+.tchip:hover{color:var(--tx);border-color:var(--bd3)}
+.tchip.on{background:rgba(255,200,50,.1);border-color:#ffc832;color:#ffc832}
+
+/* collab badge */
+.sb-collab-detect{
+  padding:8px 13px;font-size:10px;color:var(--mu);line-height:1.5;display:none;
+}
+.sb-collab-detect.show{display:block}
+.cdet-badge{
+  display:inline-block;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  background:rgba(200,120,255,.1);border:1px solid rgba(200,120,255,.3);
+  color:var(--co);padding:2px 7px;border-radius:2px;margin-bottom:5px;
+}
+
+/* sidebar links */
+.sb-links{padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px;margin-top:auto}
+
+/* ══ MAIN CONTENT ══ */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;overflow-y:auto}
+
+/* ── TOOLBAR (sort bar) ── */
+.toolbar{
+  position:sticky;top:0;z-index:10;
+  background:rgba(5,5,8,.9);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--bd);
+  padding:0 20px;height:44px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.toolbar-label{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--mu);white-space:nowrap}
+.sort-btns{display:flex;gap:4px}
+.sort-btn{
+  font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  padding:4px 12px;border:1px solid var(--bd2);background:transparent;color:var(--mu2);
+  border-radius:2px;cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.sort-btn:hover{color:var(--tx);border-color:var(--bd3)}
+.sort-btn.on{background:rgba(255,255,255,.06);border-color:var(--bd3);color:var(--tx)}
+.toolbar-spacer{flex:1}
+.toolbar-cnt{font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--mu);letter-spacing:.05em;white-space:nowrap}
+
+/* ── CONTENT AREA ── */
+.content{padding:20px 20px 60px;flex:1}
+
+/* ── PANEL ── */
+.panel{display:none}
+.panel.active{display:block;animation:fi .22s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* panel header */
+.ph{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.ph-title{font-family:'Rajdhani',sans-serif;font-size:clamp(18px,2.5vw,28px);font-weight:700}
+.ph-k{background:linear-gradient(135deg,var(--k1),var(--k2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ph-v{background:linear-gradient(135deg,var(--v1),var(--v2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ph-x{background:linear-gradient(135deg,var(--x1),var(--x2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ph-c{color:var(--co)}
+.ptag{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:2px 7px;border-radius:2px}
+.tagk{background:rgba(255,107,53,.1);color:var(--k1);border:1px solid rgba(255,107,53,.28)}
+.tagv{background:rgba(123,97,255,.1);color:var(--v2);border:1px solid rgba(123,97,255,.28)}
+.tagx{background:rgba(0,229,176,.1);color:var(--x1);border:1px solid rgba(0,229,176,.28)}
+.tagco{background:rgba(200,120,255,.1);color:var(--co);border:1px solid rgba(200,120,255,.28)}
+.ph-right{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ph-mem{font-size:11px;color:var(--mu);font-family:'Rajdhani',sans-serif}
+
+/* ── SONG GRID — 5 columns fixed ── */
+.sgrid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-bottom:24px;
+}
+@media(max-width:1100px){.sgrid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:860px) {.sgrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px) {.sgrid{grid-template-columns:repeat(2,1fr)}}
+
+/* ── SONG CARD ── */
+.sc{
+  background:var(--sf);border:1px solid var(--bd);border-radius:4px;
+  overflow:hidden;cursor:pointer;position:relative;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.sc:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.5)}
+.sc.sk:hover{border-color:rgba(255,107,53,.5)}
+.sc.sv:hover{border-color:rgba(123,97,255,.5)}
+.sc.sx:hover{border-color:rgba(0,229,176,.4)}
+.sc.sco:hover{border-color:rgba(200,120,255,.45)}
+.sc.gone{display:none}
+/* color bar top */
+.sc.sk::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--k1),var(--k2));z-index:2}
+.sc.sv::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--v1),var(--v2));z-index:2}
+.sc.sx::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--x1),var(--x2));z-index:2}
+.sc.sco::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--co),#9050ff);z-index:2}
+
+/* thumbnail — always visible, 16:9 */
+.sth{
+  width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;
+  background:var(--sf2);display:flex;align-items:center;justify-content:center;
+}
+.sth img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s}
+.sc:hover .sth img{opacity:.85}
+.play-icon{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:34px;height:34px;background:rgba(0,0,0,.65);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;padding-left:3px;
+  transition:transform .14s,background .14s;pointer-events:none;z-index:1;
+}
+.sc:hover .play-icon{transform:translate(-50%,-50%) scale(1.12);background:rgba(0,0,0,.8)}
+.snoth{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:22px;background:linear-gradient(135deg,var(--sf),var(--sf2));
+}
+/* no-video overlay */
+.sc.no-vid .sth::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,.015) 4px,rgba(255,255,255,.015) 8px);
+  z-index:0;
+}
+
+/* card info */
+.si{padding:7px 9px 9px}
+.sttl{
+  font-size:11px;font-weight:700;color:var(--tx);
+  margin-bottom:4px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.smeta{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.syr{font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--mu)}
+.stp{font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:1px 4px;border-radius:2px}
+.to{background:rgba(255,200,50,.1);color:#ffc832;border:1px solid rgba(255,200,50,.2)}
+.tc{background:rgba(150,150,200,.1);color:var(--mu2);border:1px solid rgba(150,150,200,.18)}
+.tco{background:rgba(200,120,255,.1);color:var(--co);border:1px solid rgba(200,120,255,.2)}
+.mpip{width:14px;height:14px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;font-family:'Rajdhani',sans-serif}
+
+/* ── COLLAB PARTNERS strip ── */
+.collab-partners{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.cp-b{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:3px}
+.cpk{background:rgba(255,107,53,.1);color:var(--k1);border:1px solid rgba(255,107,53,.3)}
+.cpv{background:rgba(123,97,255,.1);color:var(--v2);border:1px solid rgba(123,97,255,.3)}
+.cpx{background:rgba(0,229,176,.1);color:var(--x1);border:1px solid rgba(0,229,176,.3)}
+.cp-plus{color:var(--mu);font-weight:700;font-size:13px}
+
+/* ── SPOTIFY / LINKS ── */
+.sdiv{display:flex;align-items:center;gap:10px;margin:20px 0 14px}
+.sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:var(--bd)}
+.sdlbl{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.spico{width:18px;height:18px;border-radius:50%;background:#1db954;display:flex;align-items:center;justify-content:center;font-size:9px}
+.spemb iframe{border:none;width:100%;border-radius:4px;display:block}
+.elinks{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.eb{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:2px;text-decoration:none;border:1px solid;transition:all .14s}
+.eyt{color:#ff5252;border-color:rgba(255,82,82,.33);background:rgba(255,82,82,.05)}.eyt:hover{background:rgba(255,82,82,.13)}
+.esp{color:#1db954;border-color:rgba(29,185,84,.33);background:rgba(29,185,84,.05)}.esp:hover{background:rgba(29,185,84,.13)}
+.exx{color:var(--mu2);border-color:rgba(150,150,200,.22);background:rgba(150,150,200,.03)}.exx:hover{color:var(--tx);background:rgba(150,150,200,.09)}
+
+.empty{text-align:center;padding:40px 16px;color:var(--mu);font-size:12px}
+
+/* ══ MODAL ══ */
+.mbg{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
+.mbg.open{display:flex}
+.modal{background:var(--sf);border:1px solid var(--bd2);border-radius:6px;width:100%;max-width:700px;overflow:hidden;animation:mi .2s ease}
+@keyframes mi{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.mvid{position:relative;padding-bottom:56.25%;background:#000}
+.mvid iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.mnovid{padding:36px 20px;text-align:center;color:var(--mu);font-size:12px;background:var(--sf2)}
+.mbdy{padding:12px 16px 16px}
+.mtitl{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+.mtags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.mlnks{display:flex;gap:5px;flex-wrap:wrap}
+.ml{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:6px 13px;border-radius:2px;text-decoration:none;border:1px solid;transition:all .14s}
+.mlyt{color:#ff5252;border-color:rgba(255,82,82,.33);background:rgba(255,82,82,.05)}.mlyt:hover{background:rgba(255,82,82,.13)}
+.mlsp{color:#1db954;border-color:rgba(29,185,84,.33);background:rgba(29,185,84,.05)}.mlsp:hover{background:rgba(29,185,84,.13)}
+.mcls{float:right;background:none;border:1px solid var(--bd2);color:var(--mu2);font-size:13px;cursor:pointer;border-radius:2px;padding:2px 8px;font-family:'Rajdhani',sans-serif;font-weight:700;transition:all .14s}.mcls:hover{color:var(--tx)}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:700px){
+  :root{--sb:0px}
+  .sidebar{position:fixed;top:52px;left:0;bottom:0;width:220px;z-index:50;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sb-toggle{display:block}
+  .content{padding:14px 12px 50px}
+  .toolbar{padding:0 12px}
+}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:var(--bd3)}
+
+footer{border-top:1px solid var(--bd);padding:12px 20px;text-align:center;position:relative;z-index:1;flex-shrink:0}
+footer p{font-size:10px;color:var(--mu);letter-spacing:.06em}
+footer a{color:var(--mu);text-decoration:none}footer a:hover{color:var(--tx)}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══ -->
+<div class="topbar">
+  <button class="sb-toggle" onclick="toggleSB()">☰</button>
+  <div class="logo">
+    <span class="kc">KMNZ</span><span class="dc">×</span><span class="vc">VESPERBELL</span><span class="dc">×</span><span class="xc">XIDEN</span>
+  </div>
+  <span class="logo-sub">RK Music Hub</span>
+</div>
+
+<div class="layout">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+
+  <!-- KMNZ -->
+  <div class="sbs">
+    <div class="sbh">アーティスト</div>
+
+    <button class="sb-group gk on" id="grp-kmnz" onclick="selGroup('kmnz',this)">
+      <span class="sb-gname kc">KMNZ</span>
+      <span class="sb-gcnt" id="cnt-kmnz"></span>
+    </button>
+    <div class="sb-gsub" id="gsub-kmnz">Virtual Hip Hop Unit</div>
+    <div class="sb-members" id="mems-kmnz">
+      <button class="sb-mem" data-art="kmnz" data-m="unit"  onclick="selMember(this)">
+        <span class="pip" style="background:var(--k1);color:#fff;font-size:8px;">K</span>
+        <span class="sb-mem-label">KMNZ ALL</span>
+      </button>
+      <button class="sb-mem" data-art="kmnz" data-m="lita"  onclick="selMember(this)">
+        <span class="pip pl">L</span><span class="sb-mem-label">LITA</span>
+      </button>
+      <button class="sb-mem" data-art="kmnz" data-m="tina"  onclick="selMember(this)">
+        <span class="pip pt">T</span><span class="sb-mem-label">TINA</span>
+      </button>
+      <button class="sb-mem" data-art="kmnz" data-m="nero"  onclick="selMember(this)">
+        <span class="pip pn">N</span><span class="sb-mem-label">NERO</span>
+      </button>
+      <button class="sb-mem" data-art="kmnz" data-m="collab" onclick="selMember(this)">
+        <span class="pip" style="background:var(--co);color:#fff;font-size:8px;">C</span>
+        <span class="sb-mem-label">コラボ</span>
+      </button>
+    </div>
+    <div class="sb-type-row" id="type-kmnz" style="display:none">
+      <button class="tchip" data-art="kmnz" data-tp="orig"   onclick="selType(this)">ORIG</button>
+      <button class="tchip" data-art="kmnz" data-tp="cover"  onclick="selType(this)">COVER</button>
+      <button class="tchip" data-art="kmnz" data-tp="collab" onclick="selType(this)">COLLAB</button>
+    </div>
+  </div>
+
+  <!-- VESPERBELL -->
+  <div class="sbs">
+    <button class="sb-group gv" id="grp-vesp" onclick="selGroup('vesp',this)">
+      <span class="sb-gname vc">VESPERBELL</span>
+      <span class="sb-gcnt" id="cnt-vesp"></span>
+    </button>
+    <div class="sb-gsub" id="gsub-vesp">Virtual Rock Girls Duo</div>
+    <div class="sb-members" id="mems-vesp">
+      <button class="sb-mem" data-art="vesp" data-m="unit"   onclick="selMember(this)">
+        <span class="pip" style="background:var(--v1);color:#fff;font-size:8px;">V</span>
+        <span class="sb-mem-label">VESP ALL</span>
+      </button>
+      <button class="sb-mem" data-art="vesp" data-m="yomi"   onclick="selMember(this)">
+        <span class="pip py">Y</span><span class="sb-mem-label">ヨミ</span>
+      </button>
+      <button class="sb-mem" data-art="vesp" data-m="kasuka" onclick="selMember(this)">
+        <span class="pip pk">K</span><span class="sb-mem-label">カスカ</span>
+      </button>
+      <button class="sb-mem" data-art="vesp" data-m="collab" onclick="selMember(this)">
+        <span class="pip" style="background:var(--co);color:#fff;font-size:8px;">C</span>
+        <span class="sb-mem-label">コラボ</span>
+      </button>
+    </div>
+    <div class="sb-type-row" id="type-vesp" style="display:none">
+      <button class="tchip" data-art="vesp" data-tp="orig"   onclick="selType(this)">ORIG</button>
+      <button class="tchip" data-art="vesp" data-tp="cover"  onclick="selType(this)">COVER</button>
+      <button class="tchip" data-art="vesp" data-tp="collab" onclick="selType(this)">COLLAB</button>
+    </div>
+  </div>
+
+  <!-- XIDEN -->
+  <div class="sbs">
+    <button class="sb-group gx" id="grp-xiden" onclick="selGroup('xiden',this)">
+      <span class="sb-gname xc">XIDEN</span>
+      <span class="sb-gcnt" id="cnt-xiden"></span>
+    </button>
+    <div class="sb-gsub" id="gsub-xiden">VSinger Solo</div>
+    <div class="sb-members" id="mems-xiden">
+      <button class="sb-mem" data-art="xiden" data-m="xiden" onclick="selMember(this)">
+        <span class="pip px">X</span><span class="sb-mem-label">XIDEN ALL</span>
+      </button>
+      <button class="sb-mem" data-art="xiden" data-m="collab" onclick="selMember(this)">
+        <span class="pip" style="background:var(--co);color:#fff;font-size:8px;">C</span>
+        <span class="sb-mem-label">コラボ</span>
+      </button>
+    </div>
+    <div class="sb-type-row" id="type-xiden" style="display:none">
+      <button class="tchip" data-art="xiden" data-tp="orig"   onclick="selType(this)">ORIG</button>
+      <button class="tchip" data-art="xiden" data-tp="cover"  onclick="selType(this)">COVER</button>
+      <button class="tchip" data-art="xiden" data-tp="collab" onclick="selType(this)">COLLAB</button>
+    </div>
+  </div>
+
+  <!-- multi-select collab detect -->
+  <div class="sbs" id="sbs-collab" style="display:none">
+    <div class="sbh">コラボ検出</div>
+    <div class="sb-collab-detect show" id="collab-detect-info">
+      <div class="cdet-badge">🎵 COLLAB</div>
+      <div id="collab-detect-txt" style="font-size:10px;color:var(--mu);line-height:1.5;margin-top:4px"></div>
+    </div>
+  </div>
+
+  <!-- links -->
+  <div class="sbs" style="margin-top:auto">
+    <div class="sbh">Links</div>
+    <div class="sb-links">
+      <a class="eb eyt" href="https://www.youtube.com/@KMNZOFFICIAL" target="_blank">▶ KMNZ YT</a>
+      <a class="eb eyt" href="https://www.youtube.com/@VESPERBELL" target="_blank">▶ VESPERBELL YT</a>
+      <a class="eb eyt" href="https://www.youtube.com/@XIDEN_RKMusic" target="_blank">▶ XIDEN YT</a>
+      <a class="eb esp" href="https://rkmusic.jp" target="_blank">🎵 RK Music</a>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main" id="main-wrap">
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <span class="toolbar-label">並び順</span>
+    <div class="sort-btns">
+      <button class="sort-btn on" data-sort="new"   onclick="setSort('new',this)">新しい順</button>
+      <button class="sort-btn"    data-sort="old"   onclick="setSort('old',this)">古い順</button>
+      <button class="sort-btn"    data-sort="title" onclick="setSort('title',this)">タイトル順</button>
+    </div>
+    <div class="toolbar-spacer"></div>
+    <span class="toolbar-cnt" id="toolbar-cnt"></span>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- KMNZ Panel -->
+    <div class="panel active" id="panel-kmnz">
+      <div class="ph">
+        <div class="ph-title ph-k">KMNZ</div>
+        <span class="ptag tagk">Virtual HIPHOP Unit</span>
+        <div class="ph-right"><span class="ph-mem">LITA · TINA · NERO</span></div>
+      </div>
+      <div class="sgrid" id="g-kmnz"></div>
+      <div class="empty" id="e-kmnz" style="display:none">該当する曲が見つかりません</div>
+      <div class="sdiv"><div class="sdlbl"><div class="spico">♪</div>SPOTIFY</div></div>
+      <div class="spemb"><iframe src="https://open.spotify.com/embed/artist/4uWpa0r7BZUXJ1ip2LJysz?utm_source=generator&theme=0" height="300" allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy"></iframe></div>
+      <div class="elinks">
+        <a class="eb eyt" href="https://www.youtube.com/@KMNZOFFICIAL" target="_blank">▶ YouTube</a>
+        <a class="eb esp" href="https://open.spotify.com/artist/4uWpa0r7BZUXJ1ip2LJysz" target="_blank">♪ Spotify</a>
+        <a class="eb exx" href="https://x.com/KMNSTREET" target="_blank">𝕏 Official</a>
+        <a class="eb exx" href="https://x.com/kmnzlita" target="_blank">🐕 LITA</a>
+        <a class="eb exx" href="https://x.com/kmnztina_" target="_blank">🐾 TINA</a>
+        <a class="eb exx" href="https://x.com/kmnznero_" target="_blank">🌙 NERO</a>
+      </div>
+    </div>
+
+    <!-- VESPERBELL Panel -->
+    <div class="panel" id="panel-vesp">
+      <div class="ph">
+        <div class="ph-title ph-v">VESPERBELL</div>
+        <span class="ptag tagv">Virtual Rock Girls Duo</span>
+        <div class="ph-right"><span class="ph-mem">ヨミ · カスカ</span></div>
+      </div>
+      <div class="sgrid" id="g-vesp"></div>
+      <div class="empty" id="e-vesp" style="display:none">該当する曲が見つかりません</div>
+      <div class="sdiv"><div class="sdlbl"><div class="spico">♪</div>SPOTIFY</div></div>
+      <div class="spemb"><iframe src="https://open.spotify.com/embed/artist/0FMBfzP2kK1RajdetEVL5c?utm_source=generator&theme=0" height="300" allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy"></iframe></div>
+      <div class="elinks">
+        <a class="eb eyt" href="https://www.youtube.com/@VESPERBELL" target="_blank">▶ YouTube</a>
+        <a class="eb esp" href="https://open.spotify.com/artist/0FMBfzP2kK1RajdetEVL5c" target="_blank">♪ Spotify</a>
+        <a class="eb exx" href="https://x.com/vesperbell_info" target="_blank">𝕏 Official</a>
+        <a class="eb exx" href="https://x.com/vesper_yomi" target="_blank">💙 ヨミ</a>
+        <a class="eb exx" href="https://x.com/vesper_kasuka" target="_blank">🧡 カスカ</a>
+      </div>
+    </div>
+
+    <!-- XIDEN Panel -->
+    <div class="panel" id="panel-xiden">
+      <div class="ph">
+        <div class="ph-title ph-x">XIDEN</div>
+        <span class="ptag tagx">VSinger Solo</span>
+        <div class="ph-right"><span class="ph-mem">シデン</span></div>
+      </div>
+      <div class="sgrid" id="g-xiden"></div>
+      <div class="empty" id="e-xiden" style="display:none">該当する曲が見つかりません</div>
+      <div class="sdiv"><div class="sdlbl"><div class="spico">♪</div>SPOTIFY</div></div>
+      <div class="spemb"><iframe src="https://open.spotify.com/embed/artist/5IFmw6YxkOCVBaVEPbBMOf?utm_source=generator&theme=0" height="300" allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy"></iframe></div>
+      <div class="elinks">
+        <a class="eb eyt" href="https://www.youtube.com/@XIDEN_RKMusic" target="_blank">▶ YouTube</a>
+        <a class="eb esp" href="https://open.spotify.com/artist/5IFmw6YxkOCVBaVEPbBMOf" target="_blank">♪ Spotify</a>
+        <a class="eb exx" href="https://x.com/XIDEN_RKMusic" target="_blank">𝕏 XIDEN</a>
+      </div>
+    </div>
+
+    <!-- COLLAB Panel -->
+    <div class="panel" id="panel-collab">
+      <div class="ph">
+        <div class="ph-title ph-c">🎵 コラボ</div>
+        <span class="ptag tagco">Cross-Artist</span>
+      </div>
+      <div class="collab-partners" id="collab-partners"></div>
+      <div class="sgrid" id="g-collab"></div>
+      <div class="empty" id="e-collab" style="display:none">このアーティスト間のコラボ曲は未登録です</div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<footer><p>Fan site — All content belongs to respective artists &amp; <a href="https://rkmusic.jp" target="_blank">RK Music</a></p></footer>
+
+<!-- MODAL -->
+<div class="mbg" id="mbg" onclick="mclickbg(event)">
+  <div class="modal">
+    <div id="mvid-wrap"></div>
+    <div class="mbdy">
+      <button class="mcls" onclick="mclose()">✕ 閉じる</button>
+      <div class="mtitl" id="mtitl"></div>
+      <div class="mtags" id="mtags"></div>
+      <div class="mlnks" id="mlnks"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA
+// key fields:
+//   t: title, y: year, tp: 'orig'|'cover'|'collab'
+//   m: member tags array
+//   id: YouTube video ID ('' = no video)
+//   sp: Spotify URL
+//   cw: collabWith artists array (for cross-artist collab)
+//   ext: true = external/off-channel collab
+// ══════════════════════════════════════════════════════
+
+const KMNZ_DATA = [
+  // ─ 新体制オリジナル ─
+  {t:'OPENER',                   y:2026,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'WAVE',                     y:2025,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'DROPS',                    y:2025,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'POSSE',                    y:2025,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'TOKONATSU STYLE 2025',     y:2025,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'ドラマツルギー (Cover) / NERO', y:2025,tp:'cover',m:['nero'],   id:'',             sp:''},
+  {t:'Super Shooter (Cover)',    y:2025,tp:'cover', m:['unit'],       id:'',             sp:''},
+  {t:'VERSE',                    y:2024,tp:'orig', m:['unit'],        id:'ZGlm8HqSkkU',  sp:''},
+  {t:'MID JOURNEY',              y:2024,tp:'orig', m:['unit'],        id:'X2YvS5GxXpo',  sp:''},
+  {t:'CALLING',                  y:2024,tp:'orig', m:['unit'],        id:'YFq_i4TfCfs',  sp:''},
+  {t:'BE NOISY!',                y:2024,tp:'orig', m:['unit'],        id:'oBN6MF4PnNQ',  sp:''},
+  {t:'NEW DAYS',                 y:2024,tp:'orig', m:['unit'],        id:'pJjXRKlGCtM',  sp:''},
+  {t:'META FICTION',             y:2024,tp:'orig', m:['unit'],        id:'I_B6ERBWmpc',  sp:''},
+  {t:'DROP IN',                  y:2024,tp:'orig', m:['unit'],        id:'Dv7PF42O31A',  sp:''},
+  {t:'GROWL',                    y:2024,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'REVERSE',                  y:2024,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'ビビデバ (Cover) / TINA',   y:2024,tp:'cover',m:['tina'],       id:'vD4ZhEpMoFE',  sp:''},
+  // コラボ(クロスアーティスト)
+  {t:'BE NOISY! (Cover) XIDEN × KMNZ LITA', y:2024,tp:'collab',m:['collab','lita'],id:'LDYgJhLoYZI',sp:'',cw:['kmnz','xiden']},
+  {t:'RISE feat.KMNZ LITA (VOICE SPARK ver.)',y:2024,tp:'collab',m:['collab','lita'],id:'',sp:'',cw:['kmnz','vesp']},
+  // 旧体制
+  {t:'OUR DAYS',                 y:2023,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'未来図 feat.VESPERBELLカスカ × KMNZ LIZ',y:2023,tp:'collab',m:['collab','lita'],id:'kh_HvVSl3Q0',sp:'',cw:['kmnz','vesp']},
+  {t:'Fiction feat.KMNZ LITA × HACHI',y:2023,tp:'collab',m:['collab','lita'],id:'kh_HvVSl3Q0',sp:'',cw:['kmnz']},
+  {t:'VR - Virtual Reality',     y:2018,tp:'orig', m:['lita'],        id:'9q5k3ySevqI',  sp:'https://open.spotify.com/track/3VvatWkCNYlV0VguOvdllr'},
+  {t:'R U GAME?',                y:2019,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'melty girl',               y:2019,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'sTarZ',                    y:2019,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'DAYDREAM',                 y:2019,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'OVERNIGHT',                y:2019,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'GALAXY',                   y:2019,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'AWAKEN',                   y:2019,tp:'orig', m:['lita'],        id:'',             sp:''},
+  {t:'WE ARE BACK',              y:2019,tp:'orig', m:['lita'],        id:'',             sp:''},
+  // 外部コラボ (チャンネル外)
+  {t:'ゆびきり (feat. KMNZ LITA)',y:2023,tp:'cover',m:['lita'],       id:'',sp:'',ext:true, note:'外部コラボ'},
+];
+
+const VESP_DATA = [
+  // 最新順
+  {t:'MACH',                     y:2026,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'ISSEN / 一閃',              y:2025,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'NO MORE!!',                y:2025,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'WINGS',                    y:2025,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'ロウワー (Cover) ヨミ × 空澄セナ',y:2025,tp:'collab',m:['collab','yomi'],id:'V6C16SIlfR0',sp:'',cw:['vesp'],ext:true},
+  {t:'Noise in Silence',         y:2024,tp:'orig', m:['unit'],        id:'CCvB5X8UuvQ',  sp:'https://open.spotify.com/track/6bPHnXFSoVRRUK67HFqoV1'},
+  {t:'羽化 (emergence)',          y:2024,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'Bell Ringer',              y:2024,tp:'orig', m:['unit'],        id:'jkzFmMPMSr8',  sp:''},
+  {t:'鳴動 (Meidou)',            y:2024,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'Trust Me',                 y:2024,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'Imperfect',                y:2024,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'RISE feat.KMNZ LITA (VOICE SPARK ver.)',y:2024,tp:'collab',m:['collab'],id:'',sp:'',cw:['kmnz','vesp']},
+  {t:'RAMPAGE',                  y:2023,tp:'orig', m:['unit'],        id:'NX7s6-pWKXk',  sp:'https://open.spotify.com/track/1sNhx5X0bIf1y3IQLS4ATI'},
+  {t:'未来図 feat.VESPERBELLカスカ × KMNZ LIZ',y:2023,tp:'collab',m:['collab','kasuka'],id:'kh_HvVSl3Q0',sp:'',cw:['kmnz','vesp']},
+  {t:'Admit feat.VESPERBELLヨミ × HACHI',y:2023,tp:'collab',m:['collab','yomi'],id:'kh_HvVSl3Q0',sp:'',cw:['vesp']},
+  {t:'inspire',                  y:2022,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'Revelation / 革命',        y:2022,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'Twilight',                 y:2022,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'Dear',                     y:2022,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'To The World',             y:2022,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'Mavis / メイビス',         y:2022,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'VERSUS',                   y:2021,tp:'orig', m:['unit'],        id:'1KiQAq9UjAA',  sp:''},
+  {t:'ignition',                 y:2021,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'EX MACHINA',               y:2021,tp:'orig', m:['unit'],        id:'',             sp:''},
+  {t:'The Everlasting Guilty Crown (Cover) / ヨミ',y:2020,tp:'cover',m:['yomi'],id:'5vZNqN6uNhg',sp:''},
+  {t:'テレキャスター・ストライプ (Cover) / カスカ',y:2020,tp:'cover',m:['kasuka'],id:'UolCzCUHVu4',sp:''},
+  {t:'RISE',                     y:2020,tp:'orig', m:['unit'],        id:'LZ3UEVqLr40',  sp:'https://open.spotify.com/track/4P4WvMON5w3aBGIkxdD8Mj'},
+  // 外部コラボ
+  {t:'誘惑 feat.ヨミ (TAKU INOUE)',y:2022,tp:'cover',m:['yomi'],      id:'',sp:'',ext:true,note:'外部コラボ'},
+  {t:'星が降る夜に feat.カスカ',  y:2023,tp:'cover',m:['kasuka'],      id:'',sp:'',ext:true,note:'外部コラボ'},
+];
+
+const XIDEN_DATA = [
+  {t:'RUNWAY',                   y:2026,tp:'orig', m:['xiden'],       id:'',             sp:''},
+  {t:'closer',                   y:2025,tp:'orig', m:['xiden'],       id:'',             sp:''},
+  {t:'宿命 (Shukumei)',          y:2025,tp:'orig', m:['xiden'],       id:'',             sp:''},
+  {t:'accompany',                y:2025,tp:'orig', m:['xiden'],       id:'',             sp:''},
+  {t:'Day Opener',               y:2025,tp:'orig', m:['xiden'],       id:'',             sp:''},
+  {t:'No Reset',                 y:2025,tp:'orig', m:['xiden'],       id:'',             sp:''},
+  {t:'泡沫の夜 (Cover / nqrse)', y:2025,tp:'cover',m:['xiden'],       id:'',             sp:''},
+  {t:'Feel so good (Cover / Supercell)',y:2025,tp:'cover',m:['xiden'],id:'',             sp:''},
+  {t:'OVERLAY',                  y:2024,tp:'orig', m:['xiden'],       id:'nQz7DLTFxuU',  sp:'https://open.spotify.com/track/0BzMcPUSPWE5qMlHr2FJ6Y'},
+  {t:'BE NOISY! (Cover) XIDEN × KMNZ LITA',y:2024,tp:'collab',m:['collab','xiden'],id:'LDYgJhLoYZI',sp:'',cw:['kmnz','xiden']},
+  {t:'ハレンチ (Cover / CHANMINA)',y:2024,tp:'cover',m:['xiden'],     id:'',             sp:''},
+  {t:'フライデー・ナイト (Cover / Natori)',y:2024,tp:'cover',m:['xiden'],id:'',          sp:''},
+  // 外部コラボ
+  {t:'Stargazer feat.XIDEN',     y:2025,tp:'collab',m:['collab','xiden'],id:'',sp:'',cw:['xiden'],ext:true,note:'外部コラボ'},
+  {t:'クロスロード feat.XIDEN × 他アーティスト',y:2025,tp:'collab',m:['collab','xiden'],id:'',sp:'',cw:['xiden'],ext:true,note:'外部コラボ'},
+];
+
+// クロスアーティストコラボ一覧
+const ALL_COLLABS = [
+  {t:'RISE feat.KMNZ LITA (VOICE SPARK ver.)',y:2024,id:'',sp:'',artists:['kmnz','vesp'],note:'VOICE SPARK 2024'},
+  {t:'BE NOISY! (Cover) XIDEN × KMNZ LITA',  y:2024,id:'LDYgJhLoYZI',sp:'',artists:['kmnz','xiden'],note:'Shorts'},
+  {t:'未来図 feat.VESPERBELLカスカ × KMNZ LIZ',y:2023,id:'kh_HvVSl3Q0',sp:'',artists:['kmnz','vesp'],note:'HARMONICS EP'},
+  {t:'Fiction feat.KMNZ LITA × HACHI',        y:2023,id:'kh_HvVSl3Q0',sp:'',artists:['kmnz'],note:'HARMONICS EP'},
+  {t:'Admit feat.VESPERBELLヨミ × HACHI',     y:2023,id:'kh_HvVSl3Q0',sp:'',artists:['vesp'],note:'HARMONICS EP'},
+  {t:'ロウワー (Cover) ヨミ × 空澄セナ',     y:2025,id:'V6C16SIlfR0',sp:'',artists:['vesp'],note:'外部コラボ'},
+];
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+const selGroups = new Set(['kmnz']); // active artist groups
+let sortMode = 'new'; // 'new' | 'old' | 'title'
+const st = {
+  kmnz: {m:'all', tp:''},
+  vesp: {m:'all', tp:''},
+  xiden:{m:'all', tp:''},
+};
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+const pipMap = {
+  lita:{c:'pl',l:'L'}, tina:{c:'pt',l:'T'}, nero:{c:'pn',l:'N'},
+  yomi:{c:'py',l:'Y'}, kasuka:{c:'pk',l:'K'}, xiden:{c:'px',l:'X'},
+};
+function pips(ms){
+  return ms.filter(x=>!['unit','collab'].includes(x))
+    .map(m=>{ const p=pipMap[m]; return p?`<span class="mpip ${p.c}" title="${m}">${p.l}</span>`:''; })
+    .join('');
+}
+function ttag(tp){
+  return tp==='orig'  ? '<span class="stp to">ORIGINAL</span>'
+       : tp==='cover' ? '<span class="stp tc">COVER</span>'
+       :                '<span class="stp tco">COLLAB</span>';
+}
+function atag(art){
+  return art==='kmnz'  ? '<span class="ptag tagk"  style="font-size:8px;padding:1px 4px;">KMNZ</span>'
+       : art==='vesp'  ? '<span class="ptag tagv"  style="font-size:8px;padding:1px 4px;">VESPERBELL</span>'
+       : art==='xiden' ? '<span class="ptag tagx"  style="font-size:8px;padding:1px 4px;">XIDEN</span>'
+       : '';
+}
+
+// sort helper
+function sortArr(arr, mode){
+  const a = [...arr];
+  if(mode==='new')   return a.sort((x,y)=>y.y-x.y || x.t.localeCompare(y.t,'ja'));
+  if(mode==='old')   return a.sort((x,y)=>x.y-y.y || x.t.localeCompare(y.t,'ja'));
+  if(mode==='title') return a.sort((x,y)=>x.t.localeCompare(y.t,'ja'));
+  return a;
+}
+
+// build thumbnail HTML — always show the thumb area
+function thumbHTML(s){
+  if(s.id){
+    return `<img src="https://i.ytimg.com/vi/${s.id}/mqdefault.jpg" alt="${s.t}" loading="lazy"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="snoth" style="display:none">${s.e||'🎵'}</div>
+    <div class="play-icon">▶</div>`;
+  } else {
+    return `<div class="snoth">${s.e||'🎵'}</div>`;
+  }
+}
+
+function cardHTML(s, artCls, artKey){
+  const noVid = !s.id ? ' no-vid' : '';
+  const dm = (s.m||[]).join(',');
+  const cw = (s.cw||[]).join(',');
+  const extMark = s.ext ? '<span class="stp" style="background:rgba(255,255,255,.05);color:var(--mu);border:1px solid rgba(255,255,255,.1);">外部</span>' : '';
+  return `<div class="sc ${artCls}${noVid}"
+    data-id="${s.id||''}" data-t="${s.t.replace(/"/g,'&quot;')}"
+    data-y="${s.y}" data-tp="${s.tp}" data-m="${dm}" data-sp="${s.sp||''}"
+    data-art="${artKey}" data-cw="${cw}" onclick="openM(this)">
+    <div class="sth">${thumbHTML(s)}</div>
+    <div class="si">
+      <div class="sttl">${s.t}</div>
+      <div class="smeta">${ttag(s.tp)}<span class="syr">${s.y}</span>${pips(s.m||[])}${extMark}</div>
+    </div>
+  </div>`;
+}
+
+function collabCardHTML(s){
+  const noVid = !s.id ? ' no-vid' : '';
+  const thumb = s.id
+    ? `<img src="https://i.ytimg.com/vi/${s.id}/mqdefault.jpg" alt="${s.t}" loading="lazy"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+       <div class="snoth" style="display:none">🎵</div>
+       <div class="play-icon">▶</div>`
+    : `<div class="snoth">🎵</div>`;
+  const artBadges = (s.artists||[]).map(a=>atag(a)).join('');
+  const artStr = (s.artists||[]).join(',');
+  const extMark = s.ext ? '<span class="stp" style="background:rgba(255,255,255,.05);color:var(--mu);border:1px solid rgba(255,255,255,.1);">外部</span>' : '';
+  return `<div class="sc sco${noVid}"
+    data-id="${s.id||''}" data-t="${s.t.replace(/"/g,'&quot;')}"
+    data-y="${s.y}" data-tp="collab" data-sp="${s.sp||''}"
+    data-art="collab" data-artists="${artStr}" onclick="openM(this)">
+    <div class="sth">${thumb}</div>
+    <div class="si">
+      <div class="sttl">${s.t}${s.note?`<span style="font-size:9px;color:var(--mu2);display:block;">${s.note}</span>`:''}</div>
+      <div class="smeta"><span class="stp tco">COLLAB</span><span class="syr">${s.y}</span>${artBadges}${extMark}</div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER GRIDS
+// ══════════════════════════════════════════════════════
+function renderGrid(artKey, data, gridId){
+  const sorted = sortArr(data, sortMode);
+  document.getElementById(gridId).innerHTML = sorted.map(s=>cardHTML(s, 's'+artKey[0], artKey)).join('');
+}
+
+function init(){
+  renderGrid('kmnz',  KMNZ_DATA,  'g-kmnz');
+  renderGrid('vesp',  VESP_DATA,  'g-vesp');
+  renderGrid('xiden', XIDEN_DATA, 'g-xiden');
+  document.getElementById('cnt-kmnz').textContent  = KMNZ_DATA.length+'曲';
+  document.getElementById('cnt-vesp').textContent  = VESP_DATA.length+'曲';
+  document.getElementById('cnt-xiden').textContent = XIDEN_DATA.length+'曲';
+  // init member highlight — kmnz all on
+  applyFilter('kmnz');
+  updateToolbarCount();
+}
+
+// ══════════════════════════════════════════════════════
+// SORT
+// ══════════════════════════════════════════════════════
+function setSort(mode, btn){
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  // re-render all grids preserving filters
+  renderGrid('kmnz',  KMNZ_DATA,  'g-kmnz');
+  renderGrid('vesp',  VESP_DATA,  'g-vesp');
+  renderGrid('xiden', XIDEN_DATA, 'g-xiden');
+  // re-apply filters
+  applyFilter('kmnz');
+  applyFilter('vesp');
+  applyFilter('xiden');
+  // re-render collab if active
+  if(document.getElementById('panel-collab').classList.contains('active')){
+    renderCollabPanel([...selGroups]);
+  }
+  updateToolbarCount();
+}
+
+// ══════════════════════════════════════════════════════
+// GROUP SELECTION
+// ══════════════════════════════════════════════════════
+function selGroup(art, btn){
+  const wasOn = btn.classList.contains('on');
+  if(wasOn && selGroups.size===1) return; // min 1
+
+  const clsMap = {kmnz:'gk',vesp:'gv',xiden:'gx'};
+
+  if(wasOn){
+    selGroups.delete(art);
+    btn.classList.remove('on');
+    document.getElementById('mems-'+art).style.display='none';
+    document.getElementById('type-'+art).style.display='none';
+  } else {
+    selGroups.add(art);
+    btn.classList.add('on');
+    document.getElementById('mems-'+art).style.display='';
+    document.getElementById('type-'+art).style.display='flex';
+  }
+
+  updateView();
+}
+
+function updateView(){
+  const arts = [...selGroups];
+  ['kmnz','vesp','xiden','collab'].forEach(id=>{
+    document.getElementById('panel-'+id).classList.remove('active');
+  });
+
+  if(arts.length===1){
+    document.getElementById('panel-'+arts[0]).classList.add('active');
+    document.getElementById('sbs-collab').style.display='none';
+  } else {
+    document.getElementById('panel-collab').classList.add('active');
+    document.getElementById('sbs-collab').style.display='';
+    const names = arts.map(a=>a==='kmnz'?'KMNZ':a==='vesp'?'VESPERBELL':'XIDEN');
+    document.getElementById('collab-detect-txt').textContent = names.join(' × ') + ' のコラボを表示中';
+    renderCollabPanel(arts);
+  }
+  updateToolbarCount();
+}
+
+function renderCollabPanel(arts){
+  // partner badges
+  const badgeCls={kmnz:'cpk',vesp:'cpv',xiden:'cpx'};
+  const badgeName={kmnz:'KMNZ',vesp:'VESPERBELL',xiden:'XIDEN'};
+  let ph='';
+  arts.forEach((a,i)=>{
+    if(i>0) ph+='<span class="cp-plus">×</span>';
+    ph+=`<span class="cp-b ${badgeCls[a]}">${badgeName[a]}</span>`;
+  });
+  document.getElementById('collab-partners').innerHTML=ph;
+
+  const sorted = sortArr(ALL_COLLABS, sortMode);
+  const matched = sorted.filter(c=> arts.some(a=>c.artists.includes(a)));
+  const grid = document.getElementById('g-collab');
+  if(matched.length===0){
+    grid.innerHTML='';
+    document.getElementById('e-collab').style.display='block';
+  } else {
+    grid.innerHTML=matched.map(s=>collabCardHTML(s)).join('');
+    document.getElementById('e-collab').style.display='none';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// MEMBER / TYPE SELECTION
+// ══════════════════════════════════════════════════════
+function selMember(btn){
+  const art = btn.dataset.art;
+  const m   = btn.dataset.m;
+  // clear other member selections for this art
+  document.querySelectorAll(`.sb-mem[data-art="${art}"]`).forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  st[art].m = m==='unit'?'all' : m==='xiden'?'all' : m; // 'unit'/'xiden' = show all
+  // if collab selected, set member filter to collab
+  if(m==='collab') st[art].m = 'collab';
+  applyFilter(art);
+  updateToolbarCount();
+}
+
+function selType(btn){
+  const art = btn.dataset.art;
+  const tp  = btn.dataset.tp;
+  if(st[art].tp===tp){
+    st[art].tp='';
+    btn.classList.remove('on');
+  } else {
+    document.querySelectorAll(`.tchip[data-art="${art}"]`).forEach(b=>b.classList.remove('on'));
+    st[art].tp=tp;
+    btn.classList.add('on');
+  }
+  applyFilter(art);
+  updateToolbarCount();
+}
+
+function applyFilter(art){
+  const s = st[art];
+  let n=0;
+  document.querySelectorAll(`#g-${art} .sc`).forEach(c=>{
+    const ms = c.dataset.m.split(',');
+    const tp = c.dataset.tp;
+    let mok;
+    if(s.m==='all'){
+      mok=true;
+    } else if(s.m==='collab'){
+      mok=ms.includes('collab');
+    } else {
+      mok=ms.includes(s.m)||ms.includes('unit');
+    }
+    const tok = !s.tp || tp===s.tp;
+    const show=mok&&tok;
+    c.classList.toggle('gone',!show);
+    if(show) n++;
+  });
+  document.getElementById('e-'+art).style.display=n?'none':'block';
+}
+
+function updateToolbarCount(){
+  const arts = [...selGroups];
+  if(arts.length===1){
+    const art=arts[0];
+    const visible = document.querySelectorAll(`#g-${art} .sc:not(.gone)`).length;
+    const total   = document.querySelectorAll(`#g-${art} .sc`).length;
+    document.getElementById('toolbar-cnt').textContent = `${visible} / ${total} 曲`;
+  } else {
+    const n = document.querySelectorAll('#g-collab .sc:not(.gone)').length;
+    document.getElementById('toolbar-cnt').textContent = `${n} 曲`;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SIDEBAR MOBILE
+// ══════════════════════════════════════════════════════
+function toggleSB(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ══════════════════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════════════════
+function openM(c){
+  const id=c.dataset.id, t=c.dataset.t, y=c.dataset.y, tp=c.dataset.tp, sp=c.dataset.sp, art=c.dataset.art;
+  const artName = art==='kmnz'?'KMNZ': art==='vesp'?'VESPERBELL': art==='xiden'?'XIDEN':'';
+  const tpcls   = tp==='orig'?'to': tp==='cover'?'tc':'tco';
+  const tptxt   = tp==='orig'?'ORIGINAL': tp==='cover'?'COVER':'COLLAB';
+
+  document.getElementById('mtitl').textContent = t;
+  document.getElementById('mtags').innerHTML =
+    `<span class="syr" style="font-size:12px;">${y}</span>
+     <span class="stp ${tpcls}">${tptxt}</span>
+     ${art!=='collab'?atag(art):''}`;
+
+  const yturl = id
+    ? `https://www.youtube.com/watch?v=${id}`
+    : `https://www.youtube.com/results?search_query=${encodeURIComponent(t+(artName?' '+artName:''))}`;
+
+  document.getElementById('mlnks').innerHTML =
+    `<a class="ml mlyt" href="${yturl}" target="_blank">${id?'▶ YouTubeで見る':'🔍 YouTubeで検索'}</a>`
+    + (sp?`<a class="ml mlsp" href="${sp}" target="_blank">♪ Spotify</a>`:'');
+
+  document.getElementById('mvid-wrap').innerHTML = id
+    ? `<div class="mvid"><iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen></iframe></div>`
+    : `<div class="mnovid">🎵 YouTube動画ID未登録<br><span style="font-size:10px;opacity:.5;">上のボタンで検索できます</span></div>`;
+
+  document.getElementById('mbg').classList.add('open');
+  document.getElementById('sidebar').classList.remove('open');
+}
+function mclose(){
+  document.getElementById('mbg').classList.remove('open');
+  document.getElementById('mvid-wrap').innerHTML='';
+}
+function mclickbg(e){ if(e.target===document.getElementById('mbg')) mclose(); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') mclose(); });
+
+// ══════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════
+// show KMNZ member list on init
+document.getElementById('mems-kmnz').style.display='';
+document.getElementById('type-kmnz').style.display='flex';
+
+init();
+</script>
+</body>
+</html>
