@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RK Music Hub | KMNZ × VESPERBELL × XIDEN × HONK THE HORN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050508;--sf:#0d0d14;--sf2:#111120;--sf3:#0a0a12;
+  --bd:#1a1a2e;--bd2:#252540;--bd3:#2e2e50;
+  --k1:#ff6b35;--k2:#ff3a6e;
+  --v1:#7b61ff;--v2:#00d4ff;
+  --x1:#00e5b0;--x2:#00aaff;
+  --h1:#ffcc00;--h2:#ff9966;
+  --co:#c878ff;
+  --tx:#e8e8f0;--mu:#5a5a78;--mu2:#8888aa;
+  --sb:210px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--tx);font-family:'Noto Sans JP',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E")}
+
+/* ══ TOPBAR ══ */
+.topbar{position:relative;z-index:20;background:rgba(5,5,8,.95);border-bottom:1px solid var(--bd);backdrop-filter:blur(14px);padding:0 16px;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.logo{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.05em;white-space:nowrap}
+.kc{background:linear-gradient(135deg,var(--k1),var(--k2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.vc{background:linear-gradient(135deg,var(--v1),var(--v2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.xc{background:linear-gradient(135deg,var(--x1),var(--x2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hc{background:linear-gradient(135deg,var(--h1),var(--h2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.dc{color:var(--mu);margin:0 2px;font-size:12px}
+.logo-sub{font-size:9px;letter-spacing:.15em;color:var(--mu);text-transform:uppercase}
+.topbar-spacer{flex:1}
+.sb-toggle{display:none;background:none;border:1px solid var(--bd2);color:var(--mu2);padding:4px 9px;border-radius:3px;cursor:pointer;font-size:15px}
+.admin-link{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);text-decoration:none;padding:3px 8px;border:1px solid var(--bd);border-radius:2px;transition:all .14s}
+.admin-link:hover{color:var(--tx);border-color:var(--bd2)}
+
+/* ══ LAYOUT ══ */
+.layout{display:flex;flex:1;min-height:0;position:relative;z-index:1}
+
+/* ══ SIDEBAR ══ */
+.sidebar{width:var(--sb);flex-shrink:0;background:var(--sf3);border-right:1px solid var(--bd);position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;display:flex;flex-direction:column;transition:transform .28s ease}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.sbs{border-bottom:1px solid var(--bd);padding:8px 0}
+.sbs:last-child{border-bottom:none}
+.sbh{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:var(--mu);padding:0 13px 7px}
+.sb-group{width:100%;display:flex;align-items:center;gap:8px;padding:7px 13px 5px;background:none;border:none;cursor:pointer;transition:background .14s;border-left:3px solid transparent;text-align:left}
+.sb-group:hover{background:rgba(255,255,255,.03)}
+.sb-group.gk.on{background:rgba(255,107,53,.07);border-left-color:var(--k1)}
+.sb-group.gv.on{background:rgba(123,97,255,.07);border-left-color:var(--v1)}
+.sb-group.gx.on{background:rgba(0,229,176,.07);border-left-color:var(--x1)}
+.sb-group.gh.on{background:rgba(255,204,0,.07);border-left-color:var(--h1)}
+.sb-gname{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em}
+.sb-gcnt{font-family:'Rajdhani',sans-serif;font-size:9px;color:var(--mu);margin-left:auto}
+.sb-members{padding:2px 0 4px;display:none}
+.sb-group.on ~ .sb-members{display:block}
+.sb-mem{width:100%;display:flex;align-items:center;gap:7px;padding:4px 13px 4px 22px;background:none;border:none;cursor:pointer;transition:background .13s;border-left:3px solid transparent}
+.sb-mem:hover{background:rgba(255,255,255,.025)}
+.sb-mem.on{background:rgba(255,255,255,.035)}
+.pip{width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;font-family:'Rajdhani',sans-serif;flex-shrink:0}
+.pl{background:#ffc832;color:#000}.pt{background:#ff78c8;color:#000}.pn{background:#64a0ff;color:#000}
+.py{background:#32b4ff;color:#000}.pk{background:#ff8c50;color:#000}.px{background:var(--x1);color:#000}
+.pm{background:var(--h1);color:#000}.pb{background:var(--h2);color:#000}
+.sb-mem-label{font-size:11px;color:var(--mu2);font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.04em}
+.sb-mem.on .sb-mem-label{color:var(--tx)}
+.sb-type-row{display:flex;gap:3px;padding:3px 13px 5px;flex-wrap:wrap}
+.tchip{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border:1px solid var(--bd2);background:transparent;color:var(--mu);border-radius:2px;cursor:pointer;transition:all .13s}
+.tchip:hover{color:var(--tx);border-color:var(--bd3)}
+.tchip.on{background:rgba(255,200,50,.1);border-color:#ffc832;color:#ffc832}
+.sb-collab-detect{padding:7px 13px;font-size:10px;color:var(--mu);line-height:1.5;display:none}
+.sb-collab-detect.show{display:block}
+.cdet-badge{display:inline-block;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(200,120,255,.1);border:1px solid rgba(200,120,255,.3);color:var(--co);padding:2px 7px;border-radius:2px;margin-bottom:5px}
+.sb-links{padding:5px 10px 8px;display:flex;flex-direction:column;gap:4px;margin-top:auto}
+
+/* ══ MAIN ══ */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;overflow-y:auto}
+
+/* ── TOOLBAR ── */
+.toolbar{position:sticky;top:0;z-index:10;background:rgba(5,5,8,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd);padding:0 20px;height:44px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.toolbar-label{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--mu);white-space:nowrap}
+.sort-btns{display:flex;gap:3px}
+.sort-btn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:4px 11px;border:1px solid var(--bd2);background:transparent;color:var(--mu2);border-radius:2px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sort-btn:hover{color:var(--tx);border-color:var(--bd3)}
+.sort-btn.on{background:rgba(255,255,255,.06);border-color:var(--bd3);color:var(--tx)}
+.toolbar-spacer{flex:1}
+.toolbar-cnt{font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--mu);white-space:nowrap}
+
+/* ── CONTENT ── */
+.content{padding:18px 20px 60px;flex:1}
+.panel{display:none}
+.panel.active{display:block;animation:fi .22s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.ph{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.ph-title{font-family:'Rajdhani',sans-serif;font-size:clamp(16px,2.5vw,26px);font-weight:700}
+.ph-k{background:linear-gradient(135deg,var(--k1),var(--k2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ph-v{background:linear-gradient(135deg,var(--v1),var(--v2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ph-x{background:linear-gradient(135deg,var(--x1),var(--x2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ph-h{background:linear-gradient(135deg,var(--h1),var(--h2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ph-c{color:var(--co)}
+.ptag{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:2px 7px;border-radius:2px}
+.tagk{background:rgba(255,107,53,.1);color:var(--k1);border:1px solid rgba(255,107,53,.28)}
+.tagv{background:rgba(123,97,255,.1);color:var(--v2);border:1px solid rgba(123,97,255,.28)}
+.tagx{background:rgba(0,229,176,.1);color:var(--x1);border:1px solid rgba(0,229,176,.28)}
+.tagh{background:rgba(255,204,0,.1);color:var(--h1);border:1px solid rgba(255,204,0,.28)}
+.tagco{background:rgba(200,120,255,.1);color:var(--co);border:1px solid rgba(200,120,255,.28)}
+.ph-right{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ph-mem{font-size:11px;color:var(--mu);font-family:'Rajdhani',sans-serif}
+
+/* ── GRID 5 cols ── */
+.sgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:22px}
+@media(max-width:1100px){.sgrid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:850px){.sgrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:580px){.sgrid{grid-template-columns:repeat(2,1fr)}}
+
+/* ── CARD ── */
+.sc{background:var(--sf);border:1px solid var(--bd);border-radius:4px;overflow:hidden;cursor:pointer;position:relative;transition:transform .16s,border-color .16s,box-shadow .16s}
+.sc:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.5)}
+.sc.sk:hover{border-color:rgba(255,107,53,.5)}
+.sc.sv:hover{border-color:rgba(123,97,255,.5)}
+.sc.sx:hover{border-color:rgba(0,229,176,.4)}
+.sc.sh:hover{border-color:rgba(255,204,0,.45)}
+.sc.sco:hover{border-color:rgba(200,120,255,.45)}
+.sc.gone{display:none}
+.sc.sk::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--k1),var(--k2));z-index:2}
+.sc.sv::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--v1),var(--v2));z-index:2}
+.sc.sx::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--x1),var(--x2));z-index:2}
+.sc.sh::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--h1),var(--h2));z-index:2}
+.sc.sco::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--co),#9050ff);z-index:2}
+.sth{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:var(--sf2);display:flex;align-items:center;justify-content:center}
+.sth img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .2s}
+.sc:hover .sth img{opacity:.85}
+.play-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;background:rgba(0,0,0,.65);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;padding-left:2px;transition:transform .14s,background .14s;pointer-events:none;z-index:1}
+.sc:hover .play-icon{transform:translate(-50%,-50%) scale(1.12);background:rgba(0,0,0,.8)}
+.snoth{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px;background:linear-gradient(135deg,var(--sf),var(--sf2))}
+.si{padding:6px 8px 8px}
+.sttl{font-size:11px;font-weight:700;color:var(--tx);margin-bottom:3px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.smeta{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.syr{font-family:'Rajdhani',sans-serif;font-size:9px;color:var(--mu)}
+.stp{font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:1px 4px;border-radius:2px}
+.to{background:rgba(255,200,50,.1);color:#ffc832;border:1px solid rgba(255,200,50,.2)}
+.tc{background:rgba(150,150,200,.1);color:var(--mu2);border:1px solid rgba(150,150,200,.18)}
+.tco{background:rgba(200,120,255,.1);color:var(--co);border:1px solid rgba(200,120,255,.2)}
+.mpip{width:13px;height:13px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:6px;font-weight:700;font-family:'Rajdhani',sans-serif}
+
+/* collab partners */
+.collab-partners{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.cp-b{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:3px}
+.cpk{background:rgba(255,107,53,.1);color:var(--k1);border:1px solid rgba(255,107,53,.3)}
+.cpv{background:rgba(123,97,255,.1);color:var(--v2);border:1px solid rgba(123,97,255,.3)}
+.cpx{background:rgba(0,229,176,.1);color:var(--x1);border:1px solid rgba(0,229,176,.3)}
+.cph{background:rgba(255,204,0,.1);color:var(--h1);border:1px solid rgba(255,204,0,.3)}
+.cp-plus{color:var(--mu);font-weight:700;font-size:12px}
+
+/* spotify / links */
+.sdiv{display:flex;align-items:center;gap:10px;margin:18px 0 12px}
+.sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:var(--bd)}
+.sdlbl{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.spico{width:16px;height:16px;border-radius:50%;background:#1db954;display:flex;align-items:center;justify-content:center;font-size:8px}
+.spemb iframe{border:none;width:100%;border-radius:4px;display:block}
+.elinks{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.eb{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:2px;text-decoration:none;border:1px solid;transition:all .14s}
+.eyt{color:#ff5252;border-color:rgba(255,82,82,.33);background:rgba(255,82,82,.05)}.eyt:hover{background:rgba(255,82,82,.13)}
+.esp{color:#1db954;border-color:rgba(29,185,84,.33);background:rgba(29,185,84,.05)}.esp:hover{background:rgba(29,185,84,.13)}
+.exx{color:var(--mu2);border-color:rgba(150,150,200,.22);background:rgba(150,150,200,.03)}.exx:hover{color:var(--tx);background:rgba(150,150,200,.09)}
+.empty{text-align:center;padding:36px 16px;color:var(--mu);font-size:12px}
+
+/* ══ MODAL ══ */
+.mbg{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
+.mbg.open{display:flex}
+.modal{background:var(--sf);border:1px solid var(--bd2);border-radius:6px;width:100%;max-width:700px;overflow:hidden;animation:mi .2s ease}
+@keyframes mi{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.mvid{position:relative;padding-bottom:56.25%;background:#000}
+.mvid iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.mnovid{padding:32px 20px;text-align:center;color:var(--mu);font-size:12px;background:var(--sf2)}
+.mbdy{padding:12px 16px 16px}
+.mtitl{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:5px}
+.mtags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.mlnks{display:flex;gap:5px;flex-wrap:wrap}
+.ml{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:2px;text-decoration:none;border:1px solid;transition:all .14s}
+.mlyt{color:#ff5252;border-color:rgba(255,82,82,.33);background:rgba(255,82,82,.05)}.mlyt:hover{background:rgba(255,82,82,.13)}
+.mlsp{color:#1db954;border-color:rgba(29,185,84,.33);background:rgba(29,185,84,.05)}.mlsp:hover{background:rgba(29,185,84,.13)}
+.mcls{float:right;background:none;border:1px solid var(--bd2);color:var(--mu2);font-size:12px;cursor:pointer;border-radius:2px;padding:2px 8px;font-family:'Rajdhani',sans-serif;font-weight:700;transition:all .14s}.mcls:hover{color:var(--tx)}
+
+/* ══ ADMIN PANEL ══ */
+#admin-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.95);backdrop-filter:blur(16px);overflow-y:auto}
+#admin-overlay.open{display:block}
+.adm-wrap{max-width:960px;margin:0 auto;padding:32px 24px 60px}
+.adm-header{display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--bd)}
+.adm-title{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:var(--tx);letter-spacing:.06em}
+.adm-badge{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;background:rgba(255,200,50,.1);border:1px solid rgba(255,200,50,.3);color:#ffc832;padding:3px 9px;border-radius:2px}
+.adm-close{margin-left:auto;background:none;border:1px solid var(--bd2);color:var(--mu2);font-size:13px;cursor:pointer;border-radius:2px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-weight:700;transition:all .14s}.adm-close:hover{color:var(--tx);border-color:var(--bd3)}
+
+/* login */
+/* ── ログイン画面 補完スタイル ── */
+.adm-login{max-width:340px;margin:80px auto;background:var(--sf);border:1px solid var(--bd2);border-radius:8px;padding:36px 28px;display:flex;flex-direction:column;gap:0}
+.adm-login-logo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:24px}
+.adm-login-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:.1em;color:var(--tx)}
+.adm-pw-field{width:100%;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);border-radius:4px;padding:12px 14px;font-size:16px;font-family:inherit;outline:none;transition:border-color .14s;text-align:center;letter-spacing:.3em;margin-bottom:6px}
+.adm-pw-field:focus{border-color:var(--v1);box-shadow:0 0 0 2px rgba(123,97,255,.15)}
+.adm-pw-field::placeholder{letter-spacing:.05em;font-size:13px;color:var(--mu)}
+.adm-login-btns{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.adm-btn-full{width:100%;padding:10px 0;font-size:13px}
+.adm-btn-cancel{width:100%;padding:8px 0;font-size:11px;background:transparent;border:1px solid var(--bd2);color:var(--mu);font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .14s}
+.adm-btn-cancel:hover{color:var(--tx);border-color:var(--bd3)}
+.adm-err{font-size:11px;color:#ff5252;text-align:center;margin-top:4px;display:none;font-family:'Rajdhani',sans-serif;letter-spacing:.05em}
+.adm-form-row{margin-bottom:14px}
+.adm-label{display:block;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mu);margin-bottom:5px}
+.adm-input{width:100%;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);border-radius:3px;padding:8px 10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;outline:none;transition:border-color .14s}
+.adm-input:focus{border-color:var(--bd3)}
+.adm-btn{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 18px;border-radius:2px;border:none;cursor:pointer;transition:all .14s}
+.adm-btn-primary{background:rgba(123,97,255,.2);border:1px solid var(--v1);color:var(--v2)}.adm-btn-primary:hover{background:rgba(123,97,255,.35)}
+.adm-btn-danger{background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);color:#ff5252}.adm-btn-danger:hover{background:rgba(255,82,82,.2)}
+.adm-btn-success{background:rgba(0,229,176,.1);border:1px solid rgba(0,229,176,.3);color:var(--x1)}.adm-btn-success:hover{background:rgba(0,229,176,.2)}
+.adm-err{font-size:11px;color:#ff5252;margin-top:6px;display:none}
+
+/* admin section */
+.adm-sec{margin-bottom:32px}
+.adm-sec-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--mu);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.adm-artist-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.adm-tab{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:2px;cursor:pointer;border:1px solid var(--bd2);background:transparent;color:var(--mu2);transition:all .14s}
+.adm-tab:hover{color:var(--tx)}
+.adm-tab.on-k{background:rgba(255,107,53,.1);border-color:var(--k1);color:var(--k1)}
+.adm-tab.on-v{background:rgba(123,97,255,.1);border-color:var(--v1);color:var(--v2)}
+.adm-tab.on-x{background:rgba(0,229,176,.1);border-color:var(--x1);color:var(--x1)}
+.adm-tab.on-h{background:rgba(255,204,0,.1);border-color:var(--h1);color:var(--h1)}
+.adm-tab.on-c{background:rgba(200,120,255,.1);border-color:var(--co);color:var(--co)}
+
+/* add form */
+.adm-form{background:var(--sf);border:1px solid var(--bd);border-radius:4px;padding:18px;margin-bottom:14px}
+.adm-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.adm-form-grid .full{grid-column:1/-1}
+.adm-select{width:100%;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);border-radius:3px;padding:8px 10px;font-size:12px;font-family:'Noto Sans JP',sans-serif;outline:none}
+.adm-select:focus{border-color:var(--bd3)}
+
+/* song list table */
+.adm-table{width:100%;border-collapse:collapse;font-size:11px}
+.adm-table th{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--mu);padding:6px 8px;text-align:left;border-bottom:1px solid var(--bd)}
+.adm-table td{padding:7px 8px;border-bottom:1px solid rgba(26,26,46,.5);vertical-align:middle;color:var(--tx)}
+.adm-table tr:hover td{background:rgba(255,255,255,.02)}
+.adm-table .td-title{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-table .td-actions{display:flex;gap:4px}
+.adm-table button{font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:2px;border:1px solid;cursor:pointer;transition:all .14s;background:transparent}
+.adm-table .btn-del{color:#ff5252;border-color:rgba(255,82,82,.3)}.adm-table .btn-del:hover{background:rgba(255,82,82,.15)}
+.adm-table .btn-edit{color:var(--mu2);border-color:var(--bd2)}.adm-table .btn-edit:hover{color:var(--tx);border-color:var(--bd3)}
+.adm-notice{font-size:11px;color:var(--mu);padding:10px 12px;background:var(--sf);border:1px solid var(--bd);border-radius:3px;line-height:1.6}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:700px){
+  :root{--sb:0px}
+  .sidebar{position:fixed;top:52px;left:0;bottom:0;width:220px;z-index:50;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sb-toggle{display:block}
+  .content{padding:14px 12px 50px}
+  .toolbar{padding:0 12px}
+  .adm-form-grid{grid-template-columns:1fr}
+}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}::-webkit-scrollbar-thumb:hover{background:var(--bd3)}
+footer{border-top:1px solid var(--bd);padding:10px 20px;text-align:center;position:relative;z-index:1;flex-shrink:0}
+footer p{font-size:10px;color:var(--mu);letter-spacing:.06em}
+footer a{color:var(--mu);text-decoration:none}footer a:hover{color:var(--tx)}
+
+
+/* ── 歌い手選択ボタン ── */
+.sb-singer{position:relative}
+.sb-singer.singer-on{background:rgba(200,120,255,.08)!important;border-left-color:var(--co)!important}
+.sb-singer.singer-on .sb-mem-label{color:var(--tx)}
+/* 選択中インジケーター */
+.sb-singer.singer-on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--co)}
+/* singer-partners strip */
+.singer-partners{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.sp-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;
+  cursor:pointer;border:1px solid;transition:all .14s;
+}
+.sp-chip:hover{opacity:.8}
+.sp-chip-lita  {background:rgba(255,200,50,.1);color:#ffc832;border-color:rgba(255,200,50,.4)}
+.sp-chip-tina  {background:rgba(255,120,200,.1);color:#ff78c8;border-color:rgba(255,120,200,.4)}
+.sp-chip-nero  {background:rgba(100,160,255,.1);color:#64a0ff;border-color:rgba(100,160,255,.4)}
+.sp-chip-yomi  {background:rgba(50,180,255,.1);color:#32b4ff;border-color:rgba(50,180,255,.4)}
+.sp-chip-kasuka{background:rgba(255,140,80,.1);color:#ff8c50;border-color:rgba(255,140,80,.4)}
+.sp-chip-xiden {background:rgba(0,229,176,.1);color:var(--x1);border-color:rgba(0,229,176,.4)}
+.sp-chip-moco  {background:rgba(255,204,0,.1);color:var(--h1);border-color:rgba(255,204,0,.4)}
+.sp-chip-bambi {background:rgba(255,153,102,.1);color:var(--h2);border-color:rgba(255,153,102,.4)}
+.sp-plus{color:var(--mu);font-weight:700;font-size:13px}
+/* カードに歌い手バッジ */
+.singer-badge{
+  font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;letter-spacing:.06em;
+  padding:1px 5px;border-radius:2px;
+}
+
+/* ── YouTube overlay on hover ── */
+.sth-link{display:block;text-decoration:none;position:relative}
+.yt-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0);transition:background .18s;pointer-events:none}
+.sth-link:hover .yt-overlay{background:rgba(0,0,0,.55)}
+.yt-btn{display:flex;align-items:center;gap:5px;background:rgba(255,0,0,.88);color:#fff;padding:5px 10px;border-radius:3px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;opacity:0;transform:translateY(4px);transition:opacity .18s,transform .18s}
+.sth-link:hover .yt-btn{opacity:1;transform:translateY(0)}
+/* モーダル サムネイル */
+.modal-thumb-link{display:block;text-decoration:none;position:relative;overflow:hidden;background:#000}
+.modal-thumb-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0);transition:background .2s}
+.modal-thumb-link:hover .modal-thumb-overlay{background:rgba(0,0,0,.5)}
+.modal-play-btn{display:flex;align-items:center;gap:6px;background:rgba(255,0,0,.9);color:#fff;padding:8px 18px;border-radius:4px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;opacity:0;transform:scale(.94);transition:opacity .2s,transform .2s}
+.modal-thumb-link:hover .modal-play-btn{opacity:1;transform:scale(1)}
+/* Spotify badge */
+.sp-badge{font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px;text-decoration:none;background:rgba(29,185,84,.12);color:#1db954;border:1px solid rgba(29,185,84,.25);transition:background .14s}
+.sp-badge:hover{background:rgba(29,185,84,.25)}
+/* si cursor */
+.si{cursor:pointer;transition:background .14s}
+.si:hover{background:rgba(255,255,255,.025)}
+
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══ -->
+<div class="topbar">
+  <button class="sb-toggle" onclick="toggleSB()">☰</button>
+  <div class="logo">
+    <span class="kc">KMNZ</span><span class="dc">×</span><span class="vc">VESPERBELL</span><span class="dc">×</span><span class="xc">XIDEN</span><span class="dc">×</span><span class="hc">HONK THE HORN</span>
+  </div>
+  <span class="logo-sub" style="margin-left:4px">RK Music Hub</span>
+  <div class="topbar-spacer"></div>
+  <a href="#admin" class="admin-link" onclick="openAdmin(event)">⚙ 管理</a>
+</div>
+
+<div class="layout">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sbs">
+    <div class="sbh">アーティスト</div>
+
+    <!-- KMNZ -->
+    <button class="sb-group gk on" id="grp-kmnz" onclick="selGroup('kmnz',this)">
+      <span class="sb-gname kc">KMNZ</span>
+      <span class="sb-gcnt" id="cnt-kmnz"></span>
+    </button>
+    <div class="sb-members" id="mems-kmnz">
+      <!-- 歌い手個別ボタン（クリックでコラボ絞り込み） -->
+      <button class="sb-mem sb-singer" data-art="kmnz" data-singer="lita"   onclick="toggleSinger(this)"><span class="pip pl">L</span><span class="sb-mem-label">LITA</span></button>
+      <button class="sb-mem sb-singer" data-art="kmnz" data-singer="tina"   onclick="toggleSinger(this)"><span class="pip pt">T</span><span class="sb-mem-label">TINA</span></button>
+      <button class="sb-mem sb-singer" data-art="kmnz" data-singer="nero"   onclick="toggleSinger(this)"><span class="pip pn">N</span><span class="sb-mem-label">NERO</span></button>
+    </div>
+    <div class="sb-type-row" id="type-kmnz" style="display:none">
+      <button class="tchip" data-art="kmnz" data-tp="orig"   onclick="selType(this)">ORIG</button>
+      <button class="tchip" data-art="kmnz" data-tp="cover"  onclick="selType(this)">COVER</button>
+      <button class="tchip" data-art="kmnz" data-tp="collab" onclick="selType(this)">COLLAB</button>
+    </div>
+
+    <!-- VESPERBELL -->
+    <button class="sb-group gv" id="grp-vesp" onclick="selGroup('vesp',this)">
+      <span class="sb-gname vc">VESPERBELL</span>
+      <span class="sb-gcnt" id="cnt-vesp"></span>
+    </button>
+    <div class="sb-members" id="mems-vesp">
+      <button class="sb-mem sb-singer" data-art="vesp" data-singer="yomi"   onclick="toggleSinger(this)"><span class="pip py">Y</span><span class="sb-mem-label">ヨミ</span></button>
+      <button class="sb-mem sb-singer" data-art="vesp" data-singer="kasuka" onclick="toggleSinger(this)"><span class="pip pk">K</span><span class="sb-mem-label">カスカ</span></button>
+    </div>
+    <div class="sb-type-row" id="type-vesp" style="display:none">
+      <button class="tchip" data-art="vesp" data-tp="orig"   onclick="selType(this)">ORIG</button>
+      <button class="tchip" data-art="vesp" data-tp="cover"  onclick="selType(this)">COVER</button>
+      <button class="tchip" data-art="vesp" data-tp="collab" onclick="selType(this)">COLLAB</button>
+    </div>
+
+    <!-- XIDEN -->
+    <button class="sb-group gx" id="grp-xiden" onclick="selGroup('xiden',this)">
+      <span class="sb-gname xc">XIDEN</span>
+      <span class="sb-gcnt" id="cnt-xiden"></span>
+    </button>
+    <div class="sb-members" id="mems-xiden">
+      <button class="sb-mem sb-singer" data-art="xiden" data-singer="xiden" onclick="toggleSinger(this)"><span class="pip px">X</span><span class="sb-mem-label">XIDEN</span></button>
+    </div>
+    <div class="sb-type-row" id="type-xiden" style="display:none">
+      <button class="tchip" data-art="xiden" data-tp="orig"   onclick="selType(this)">ORIG</button>
+      <button class="tchip" data-art="xiden" data-tp="cover"  onclick="selType(this)">COVER</button>
+      <button class="tchip" data-art="xiden" data-tp="collab" onclick="selType(this)">COLLAB</button>
+    </div>
+
+    <!-- HONK THE HORN -->
+    <button class="sb-group gh" id="grp-honk" onclick="selGroup('honk',this)">
+      <span class="sb-gname hc">HONK THE HORN</span>
+      <span class="sb-gcnt" id="cnt-honk"></span>
+    </button>
+    <div class="sb-members" id="mems-honk">
+      <button class="sb-mem sb-singer" data-art="honk" data-singer="moco"  onclick="toggleSinger(this)"><span class="pip pm">M</span><span class="sb-mem-label">MOCO</span></button>
+      <button class="sb-mem sb-singer" data-art="honk" data-singer="bambi" onclick="toggleSinger(this)"><span class="pip pb">B</span><span class="sb-mem-label">BAMBI</span></button>
+    </div>
+    <div class="sb-type-row" id="type-honk" style="display:none">
+      <button class="tchip" data-art="honk" data-tp="orig"   onclick="selType(this)">ORIG</button>
+      <button class="tchip" data-art="honk" data-tp="cover"  onclick="selType(this)">COVER</button>
+    </div>
+  </div>
+
+  <!-- singer collab panel -->
+  <div class="sbs" id="sbs-singer-collab" style="display:none">
+    <div class="sbh">歌い手コラボ</div>
+    <div class="sb-collab-detect show">
+      <div class="cdet-badge" id="singer-collab-badge">🎤 SINGER SELECT</div>
+      <div id="singer-collab-txt" style="font-size:10px;color:var(--mu);line-height:1.5;margin-top:4px"></div>
+    </div>
+  </div>
+  <!-- artist collab detect (複数アーティスト選択時) -->
+  <div class="sbs" id="sbs-collab" style="display:none">
+    <div class="sbh">コラボ検出</div>
+    <div class="sb-collab-detect show">
+      <div class="cdet-badge">🎵 COLLAB</div>
+      <div id="collab-detect-txt" style="font-size:10px;color:var(--mu);line-height:1.5;margin-top:4px"></div>
+    </div>
+  </div>
+
+  <!-- links -->
+  <div class="sbs" style="margin-top:auto">
+    <div class="sbh">Links</div>
+    <div class="sb-links">
+      <a class="eb eyt" href="https://www.youtube.com/@KMNZOFFICIAL" target="_blank">▶ KMNZ</a>
+      <a class="eb eyt" href="https://www.youtube.com/@VESPERBELL" target="_blank">▶ VESPERBELL</a>
+      <a class="eb eyt" href="https://www.youtube.com/@XIDEN_RKMusic" target="_blank">▶ XIDEN</a>
+      <a class="eb eyt" href="https://www.youtube.com/@honkthehorn_official" target="_blank">▶ HONK THE HORN</a>
+      <a class="eb esp" href="https://rkmusic.jp" target="_blank">🎵 RK Music</a>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main" id="main-wrap">
+  <div class="toolbar">
+    <span class="toolbar-label">並び順</span>
+    <div class="sort-btns">
+      <button class="sort-btn on" data-sort="new"   onclick="setSort('new',this)">新しい順</button>
+      <button class="sort-btn"    data-sort="old"   onclick="setSort('old',this)">古い順</button>
+      <button class="sort-btn"    data-sort="title" onclick="setSort('title',this)">タイトル順</button>
+    </div>
+    <div class="toolbar-spacer"></div>
+    <span class="toolbar-cnt" id="toolbar-cnt"></span>
+  </div>
+  <div class="content">
+
+    <!-- KMNZ Panel -->
+    <div class="panel active" id="panel-kmnz">
+      <div class="ph"><div class="ph-title ph-k">KMNZ</div><span class="ptag tagk">Virtual HIPHOP Unit</span><div class="ph-right"><span class="ph-mem">LITA · TINA · NERO</span></div></div>
+      <div class="sgrid" id="g-kmnz"></div>
+      <div class="empty" id="e-kmnz" style="display:none">該当する曲が見つかりません</div>
+      <div class="sdiv"><div class="sdlbl"><div class="spico">♪</div>SPOTIFY</div></div>
+      <div class="spemb"><iframe src="https://open.spotify.com/embed/artist/4uWpa0r7BZUXJ1ip2LJysz?utm_source=generator&theme=0" height="280" allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy"></iframe></div>
+      <div class="elinks">
+        <a class="eb eyt" href="https://www.youtube.com/@KMNZOFFICIAL" target="_blank">▶ YouTube</a>
+        <a class="eb esp" href="https://open.spotify.com/artist/4uWpa0r7BZUXJ1ip2LJysz" target="_blank">♪ Spotify</a>
+        <a class="eb exx" href="https://x.com/KMNSTREET" target="_blank">𝕏 Official</a>
+        <a class="eb exx" href="https://x.com/kmnzlita" target="_blank">🐕 LITA</a>
+        <a class="eb exx" href="https://x.com/kmnztina_" target="_blank">🐾 TINA</a>
+        <a class="eb exx" href="https://x.com/kmnznero_" target="_blank">🌙 NERO</a>
+      </div>
+    </div>
+
+    <!-- VESPERBELL Panel -->
+    <div class="panel" id="panel-vesp">
+      <div class="ph"><div class="ph-title ph-v">VESPERBELL</div><span class="ptag tagv">Virtual Rock Girls Duo</span><div class="ph-right"><span class="ph-mem">ヨミ · カスカ</span></div></div>
+      <div class="sgrid" id="g-vesp"></div>
+      <div class="empty" id="e-vesp" style="display:none">該当する曲が見つかりません</div>
+      <div class="sdiv"><div class="sdlbl"><div class="spico">♪</div>SPOTIFY</div></div>
+      <div class="spemb"><iframe src="https://open.spotify.com/embed/artist/0FMBfzP2kK1RajdetEVL5c?utm_source=generator&theme=0" height="280" allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy"></iframe></div>
+      <div class="elinks">
+        <a class="eb eyt" href="https://www.youtube.com/@VESPERBELL" target="_blank">▶ YouTube</a>
+        <a class="eb esp" href="https://open.spotify.com/artist/0FMBfzP2kK1RajdetEVL5c" target="_blank">♪ Spotify</a>
+        <a class="eb exx" href="https://x.com/vesperbell_info" target="_blank">𝕏 Official</a>
+        <a class="eb exx" href="https://x.com/vesper_yomi" target="_blank">💙 ヨミ</a>
+        <a class="eb exx" href="https://x.com/vesper_kasuka" target="_blank">🧡 カスカ</a>
+      </div>
+    </div>
+
+    <!-- XIDEN Panel -->
+    <div class="panel" id="panel-xiden">
+      <div class="ph"><div class="ph-title ph-x">XIDEN</div><span class="ptag tagx">VSinger Solo</span><div class="ph-right"><span class="ph-mem">シデン</span></div></div>
+      <div class="sgrid" id="g-xiden"></div>
+      <div class="empty" id="e-xiden" style="display:none">該当する曲が見つかりません</div>
+      <div class="sdiv"><div class="sdlbl"><div class="spico">♪</div>SPOTIFY</div></div>
+      <div class="spemb"><iframe src="https://open.spotify.com/embed/artist/5IFmw6YxkOCVBaVEPbBMOf?utm_source=generator&theme=0" height="280" allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy"></iframe></div>
+      <div class="elinks">
+        <a class="eb eyt" href="https://www.youtube.com/@XIDEN_RKMusic" target="_blank">▶ YouTube</a>
+        <a class="eb esp" href="https://open.spotify.com/artist/5IFmw6YxkOCVBaVEPbBMOf" target="_blank">♪ Spotify</a>
+        <a class="eb exx" href="https://x.com/XIDEN_RKMusic" target="_blank">𝕏 XIDEN</a>
+      </div>
+    </div>
+
+    <!-- HONK THE HORN Panel -->
+    <div class="panel" id="panel-honk">
+      <div class="ph"><div class="ph-title ph-h">HONK THE HORN</div><span class="ptag tagh">Virtual Girls Duo</span><div class="ph-right"><span class="ph-mem">MOCO · BAMBI</span></div></div>
+      <div class="sgrid" id="g-honk"></div>
+      <div class="empty" id="e-honk" style="display:none">該当する曲が見つかりません</div>
+      <div class="elinks" style="margin-top:16px">
+        <a class="eb eyt" href="https://www.youtube.com/@honkthehorn_official" target="_blank">▶ YouTube</a>
+        <a class="eb exx" href="https://x.com/HONKTHEHORN_" target="_blank">𝕏 Official</a>
+        <a class="eb exx" href="https://x.com/hth_moco" target="_blank">🐑 MOCO</a>
+        <a class="eb exx" href="https://x.com/hth_bambi" target="_blank">🦌 BAMBI</a>
+      </div>
+    </div>
+
+    <!-- COLLAB Panel (アーティスト複数選択) -->
+    <div class="panel" id="panel-collab">
+      <div class="ph"><div class="ph-title ph-c">🎵 コラボ</div><span class="ptag tagco">Cross-Artist</span></div>
+      <div class="collab-partners" id="collab-partners"></div>
+      <div class="sgrid" id="g-collab"></div>
+      <div class="empty" id="e-collab" style="display:none">このアーティスト間のコラボ曲は未登録です</div>
+    </div>
+
+    <!-- SINGER COLLAB Panel (歌い手個別選択) -->
+    <div class="panel" id="panel-singer-collab">
+      <div class="ph">
+        <div class="ph-title" style="color:var(--co)">🎤 歌い手コラボ</div>
+        <span class="ptag tagco">Singer Select</span>
+      </div>
+      <div class="singer-partners" id="singer-partners"></div>
+      <div class="sgrid" id="g-singer-collab"></div>
+      <div class="empty" id="e-singer-collab" style="display:none">選択した歌い手のコラボ曲が見つかりません</div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<footer><p>Fan site — All content belongs to respective artists &amp; <a href="https://rkmusic.jp" target="_blank">RK Music</a></p></footer>
+
+<!-- MODAL -->
+<div class="mbg" id="mbg" onclick="mclickbg(event)">
+  <div class="modal">
+    <div id="mvid-wrap"></div>
+    <div class="mbdy">
+      <button class="mcls" onclick="mclose()">✕ 閉じる</button>
+      <div class="mtitl" id="mtitl"></div>
+      <div class="mtags" id="mtags"></div>
+      <div class="mlnks" id="mlnks"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN OVERLAY ══ -->
+<div id="admin-overlay">
+
+  <!-- LOGIN -->
+  <div class="adm-wrap" id="adm-login-wrap">
+    <div class="adm-login">
+      <div class="adm-login-logo">
+        <span style="font-size:28px">🔐</span>
+        <div class="adm-login-title">管理者ログイン</div>
+      </div>
+      <input class="adm-pw-field" type="password" id="adm-pw-input"
+        placeholder="パスワードを入力"
+        onkeydown="if(event.key==='Enter')doLogin()"
+        autofocus>
+      <div class="adm-err" id="adm-err">パスワードが違います</div>
+      <div class="adm-login-btns">
+        <button class="adm-btn adm-btn-primary adm-btn-full" onclick="doLogin()">ログイン</button>
+        <button class="adm-btn adm-btn-cancel" onclick="closeAdmin()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL (shown after login) -->
+  <div class="adm-wrap" id="adm-panel-wrap" style="display:none">
+    <div class="adm-header">
+      <div class="adm-title">Admin Panel</div>
+      <span class="adm-badge">ADMIN</span>
+      <button class="adm-btn adm-btn-danger" onclick="doLogout()" style="margin-left:8px">ログアウト</button>
+      <button class="adm-close" onclick="closeAdmin()">✕ 閉じる</button>
+    </div>
+
+    <div class="adm-notice" style="margin-bottom:24px">
+      ⚠️ 追加・削除した曲データはこのブラウザの <strong>localStorage</strong> に保存されます。
+      ブラウザをクリアすると消えるため、定期的に「JSONエクスポート」でバックアップを取ってください。
+      HTMLファイル自体は変更されません。
+    </div>
+
+    <!-- artist tabs -->
+    <div class="adm-sec">
+      <div class="adm-sec-title">アーティスト選択</div>
+      <div class="adm-artist-tabs">
+        <button class="adm-tab on-k" onclick="admSelArt('kmnz',this)">KMNZ</button>
+        <button class="adm-tab" onclick="admSelArt('vesp',this)">VESPERBELL</button>
+        <button class="adm-tab" onclick="admSelArt('xiden',this)">XIDEN</button>
+        <button class="adm-tab" onclick="admSelArt('honk',this)">HONK THE HORN</button>
+        <button class="adm-tab" onclick="admSelArt('collab',this)">コラボ</button>
+      </div>
+    </div>
+
+    <!-- add form -->
+    <div class="adm-sec">
+      <div class="adm-sec-title">＋ 曲を追加</div>
+      <div class="adm-form">
+        <div class="adm-form-grid">
+          <div class="full">
+            <label class="adm-label">タイトル *</label>
+            <input class="adm-input" id="af-title" placeholder="曲名">
+          </div>
+          <div>
+            <label class="adm-label">年 *</label>
+            <input class="adm-input" id="af-year" type="number" min="2018" max="2030" placeholder="2026">
+          </div>
+          <div>
+            <label class="adm-label">タイプ *</label>
+            <select class="adm-select" id="af-tp">
+              <option value="orig">ORIGINAL</option>
+              <option value="cover">COVER</option>
+              <option value="collab">COLLAB</option>
+            </select>
+          </div>
+          <div>
+            <label class="adm-label">メンバー *</label>
+            <select class="adm-select" id="af-member"></select>
+          </div>
+          <div>
+            <label class="adm-label">YouTube ID</label>
+            <input class="adm-input" id="af-ytid" placeholder="例: 7kTUgS414QE">
+          </div>
+          <div>
+            <label class="adm-label">Spotify URL</label>
+            <input class="adm-input" id="af-sp" placeholder="https://open.spotify.com/track/...">
+          </div>
+          <div class="full">
+            <label class="adm-label">メモ（外部コラボ等）</label>
+            <input class="adm-input" id="af-note" placeholder="外部コラボ・EP名 など">
+          </div>
+          <div class="full" style="display:flex;align-items:center;gap:10px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:var(--mu)">
+              <input type="checkbox" id="af-ext"> 外部/チャンネル外コラボ
+            </label>
+          </div>
+          <div class="full" style="margin-top:6px">
+            <button class="adm-btn adm-btn-success" onclick="addSong()">✚ 追加する</button>
+            <span id="af-msg" style="font-size:11px;margin-left:10px;color:var(--x1);display:none">追加しました！</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- song list -->
+    <div class="adm-sec">
+      <div class="adm-sec-title">曲一覧 <span id="adm-list-cnt" style="font-size:10px;color:var(--mu);font-weight:400;letter-spacing:0;text-transform:none"></span></div>
+      <div style="overflow-x:auto">
+        <table class="adm-table">
+          <thead><tr><th>タイトル</th><th>年</th><th>タイプ</th><th>メンバー</th><th>YouTube ID</th><th>操作</th></tr></thead>
+          <tbody id="adm-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- export -->
+    <div class="adm-sec">
+      <div class="adm-sec-title">データ管理</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="adm-btn adm-btn-primary" onclick="exportJSON()">📥 JSONエクスポート</button>
+        <button class="adm-btn" style="border:1px solid var(--bd2);color:var(--mu)" onclick="resetData()">🗑 追加データをリセット</button>
+      </div>
+      <p style="font-size:10px;color:var(--mu);margin-top:8px;line-height:1.6">エクスポートしたJSONファイルをHTMLのソースコードに貼り付けると永続保存できます。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// MASTER DATA (組み込み固定データ)
+// ══════════════════════════════════════════════════════
+const BASE_DATA = {
+  kmnz:[
+    {t:'OPENER',y:2026,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'WAVE',y:2025,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'DROPS',y:2025,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'POSSE',y:2025,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'TOKONATSU STYLE 2025',y:2025,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'ドラマツルギー (Cover) / NERO',y:2025,tp:'cover',m:['nero'],id:'',sp:''},
+    {t:'Super Shooter (Cover)',y:2025,tp:'cover',m:['unit'],id:'',sp:''},
+    {t:'VERSE',y:2024,tp:'orig',m:['unit'],id:'ZGlm8HqSkkU',sp:''},
+    {t:'MID JOURNEY',y:2024,tp:'orig',m:['unit'],id:'X2YvS5GxXpo',sp:''},
+    {t:'CALLING',y:2024,tp:'orig',m:['unit'],id:'YFq_i4TfCfs',sp:''},
+    {t:'BE NOISY!',y:2024,tp:'orig',m:['unit'],id:'oBN6MF4PnNQ',sp:''},
+    {t:'NEW DAYS',y:2024,tp:'orig',m:['unit'],id:'pJjXRKlGCtM',sp:''},
+    {t:'META FICTION',y:2024,tp:'orig',m:['unit'],id:'I_B6ERBWmpc',sp:''},
+    {t:'DROP IN',y:2024,tp:'orig',m:['unit'],id:'Dv7PF42O31A',sp:''},
+    {t:'GROWL',y:2024,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'REVERSE',y:2024,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'ビビデバ (Cover) / TINA',y:2024,tp:'cover',m:['tina'],id:'vD4ZhEpMoFE',sp:''},
+    {t:'BE NOISY! (Cover) XIDEN × KMNZ LITA',y:2024,tp:'collab',m:['collab','lita'],id:'LDYgJhLoYZI',sp:'',cw:['kmnz','xiden']},
+    {t:'RISE feat.KMNZ LITA (VOICE SPARK ver.)',y:2024,tp:'collab',m:['collab','lita'],id:'',sp:'',cw:['kmnz','vesp']},
+    {t:'OUR DAYS',y:2023,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'未来図 feat.VESPERBELLカスカ × KMNZ LIZ',y:2023,tp:'collab',m:['collab','lita'],id:'kh_HvVSl3Q0',sp:'',cw:['kmnz','vesp']},
+    {t:'Fiction feat.KMNZ LITA × HACHI',y:2023,tp:'collab',m:['collab','lita'],id:'kh_HvVSl3Q0',sp:'',cw:['kmnz']},
+    {t:'ゆびきり (feat. KMNZ LITA)',y:2023,tp:'cover',m:['lita'],id:'',sp:'',ext:true,note:'外部コラボ'},
+    {t:'VR - Virtual Reality',y:2018,tp:'orig',m:['lita'],id:'9q5k3ySevqI',sp:'https://open.spotify.com/track/3VvatWkCNYlV0VguOvdllr'},
+    {t:'R U GAME?',y:2019,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'melty girl',y:2019,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'sTarZ',y:2019,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'DAYDREAM',y:2019,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'OVERNIGHT',y:2019,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'GALAXY',y:2019,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'AWAKEN',y:2019,tp:'orig',m:['lita'],id:'',sp:''},
+    {t:'WE ARE BACK',y:2019,tp:'orig',m:['lita'],id:'',sp:''},
+  ],
+  vesp:[
+    {t:'MACH',y:2026,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'ISSEN / 一閃',y:2025,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'NO MORE!!',y:2025,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'WINGS',y:2025,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'ロウワー (Cover) ヨミ × 空澄セナ',y:2025,tp:'collab',m:['collab','yomi'],id:'V6C16SIlfR0',sp:'',cw:['vesp'],ext:true},
+    {t:'Noise in Silence',y:2024,tp:'orig',m:['unit'],id:'CCvB5X8UuvQ',sp:'https://open.spotify.com/track/6bPHnXFSoVRRUK67HFqoV1'},
+    {t:'羽化 (emergence)',y:2024,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'Bell Ringer',y:2024,tp:'orig',m:['unit'],id:'jkzFmMPMSr8',sp:''},
+    {t:'鳴動 (Meidou)',y:2024,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'Trust Me',y:2024,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'Imperfect',y:2024,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'RISE feat.KMNZ LITA (VOICE SPARK ver.)',y:2024,tp:'collab',m:['collab'],id:'',sp:'',cw:['kmnz','vesp']},
+    {t:'RAMPAGE',y:2023,tp:'orig',m:['unit'],id:'NX7s6-pWKXk',sp:'https://open.spotify.com/track/1sNhx5X0bIf1y3IQLS4ATI'},
+    {t:'未来図 feat.VESPERBELLカスカ × KMNZ LIZ',y:2023,tp:'collab',m:['collab','kasuka'],id:'kh_HvVSl3Q0',sp:'',cw:['kmnz','vesp']},
+    {t:'Admit feat.VESPERBELLヨミ × HACHI',y:2023,tp:'collab',m:['collab','yomi'],id:'kh_HvVSl3Q0',sp:'',cw:['vesp']},
+    {t:'星が降る夜に feat.カスカ',y:2023,tp:'cover',m:['kasuka'],id:'',sp:'',ext:true,note:'外部コラボ'},
+    {t:'inspire',y:2022,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'Revelation / 革命',y:2022,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'Twilight',y:2022,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'Dear',y:2022,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'To The World',y:2022,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'Mavis / メイビス',y:2022,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'誘惑 feat.ヨミ (TAKU INOUE)',y:2022,tp:'cover',m:['yomi'],id:'',sp:'',ext:true,note:'外部コラボ'},
+    {t:'VERSUS',y:2021,tp:'orig',m:['unit'],id:'1KiQAq9UjAA',sp:''},
+    {t:'ignition',y:2021,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'EX MACHINA',y:2021,tp:'orig',m:['unit'],id:'',sp:''},
+    {t:'The Everlasting Guilty Crown (Cover) / ヨミ',y:2020,tp:'cover',m:['yomi'],id:'5vZNqN6uNhg',sp:''},
+    {t:'テレキャスター・ストライプ (Cover) / カスカ',y:2020,tp:'cover',m:['kasuka'],id:'UolCzCUHVu4',sp:''},
+    {t:'RISE',y:2020,tp:'orig',m:['unit'],id:'LZ3UEVqLr40',sp:'https://open.spotify.com/track/4P4WvMON5w3aBGIkxdD8Mj'},
+  ],
+  xiden:[
+    {t:'RUNWAY',y:2026,tp:'orig',m:['xiden'],id:'',sp:''},
+    {t:'Stargazer feat.XIDEN',y:2025,tp:'collab',m:['collab','xiden'],id:'',sp:'',cw:['xiden'],ext:true,note:'外部コラボ'},
+    {t:'closer',y:2025,tp:'orig',m:['xiden'],id:'',sp:''},
+    {t:'宿命 (Shukumei)',y:2025,tp:'orig',m:['xiden'],id:'',sp:''},
+    {t:'accompany',y:2025,tp:'orig',m:['xiden'],id:'',sp:''},
+    {t:'Day Opener',y:2025,tp:'orig',m:['xiden'],id:'',sp:''},
+    {t:'No Reset',y:2025,tp:'orig',m:['xiden'],id:'',sp:''},
+    {t:'泡沫の夜 (Cover / nqrse)',y:2025,tp:'cover',m:['xiden'],id:'',sp:''},
+    {t:'Feel so good (Cover / Supercell)',y:2025,tp:'cover',m:['xiden'],id:'',sp:''},
+    {t:'OVERLAY',y:2024,tp:'orig',m:['xiden'],id:'nQz7DLTFxuU',sp:'https://open.spotify.com/track/0BzMcPUSPWE5qMlHr2FJ6Y'},
+    {t:'BE NOISY! (Cover) XIDEN × KMNZ LITA',y:2024,tp:'collab',m:['collab','xiden'],id:'LDYgJhLoYZI',sp:'',cw:['kmnz','xiden']},
+    {t:'ハレンチ (Cover / CHANMINA)',y:2024,tp:'cover',m:['xiden'],id:'',sp:''},
+    {t:'フライデー・ナイト (Cover / Natori)',y:2024,tp:'cover',m:['xiden'],id:'',sp:''},
+  ],
+  honk:[
+    {t:'NO LEASH',y:2026,tp:'orig',m:['unit'],id:'7kTUgS414QE',sp:''},
+  ],
+  collab:[
+    {t:'RISE feat.KMNZ LITA (VOICE SPARK ver.)',y:2024,id:'',sp:'',artists:['kmnz','vesp'],note:'VOICE SPARK 2024'},
+    {t:'BE NOISY! (Cover) XIDEN × KMNZ LITA',y:2024,id:'LDYgJhLoYZI',sp:'',artists:['kmnz','xiden'],note:'Shorts'},
+    {t:'未来図 feat.VESPERBELLカスカ × KMNZ LIZ',y:2023,id:'kh_HvVSl3Q0',sp:'',artists:['kmnz','vesp'],note:'HARMONICS EP'},
+    {t:'Fiction feat.KMNZ LITA × HACHI',y:2023,id:'kh_HvVSl3Q0',sp:'',artists:['kmnz'],note:'HARMONICS EP'},
+    {t:'Admit feat.VESPERBELLヨミ × HACHI',y:2023,id:'kh_HvVSl3Q0',sp:'',artists:['vesp'],note:'HARMONICS EP'},
+    {t:'ロウワー (Cover) ヨミ × 空澄セナ',y:2025,id:'V6C16SIlfR0',sp:'',artists:['vesp'],note:'外部コラボ'},
+  ]
+};
+
+// ══════════════════════════════════════════════════════
+// STORAGE — localStorageから追加データをマージ
+// ══════════════════════════════════════════════════════
+const STORAGE_KEY = 'rkmusic_hub_extra_v1';
+
+function loadExtra(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){ return {}; }
+}
+function saveExtra(obj){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }catch(e){}
+}
+
+// 実際に使うデータ (BASE + extra)
+let DB = {};
+function buildDB(){
+  const extra = loadExtra();
+  ['kmnz','vesp','xiden','honk','collab'].forEach(art=>{
+    DB[art] = [...(BASE_DATA[art]||[])];
+    if(extra[art]) DB[art] = DB[art].concat(extra[art]);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+const selGroups = new Set(['kmnz']);
+let sortMode = 'new';
+const st = { kmnz:{m:'all',tp:''}, vesp:{m:'all',tp:''}, xiden:{m:'all',tp:''}, honk:{m:'all',tp:''} };
+
+// 歌い手個別選択状態 — "lita", "tina", "nero", "yomi", "kasuka", "xiden", "moco", "bambi"
+const selSingers = new Set();
+
+// 歌い手メタ情報（表示名・色・所属アーティスト）
+const SINGER_META = {
+  lita:   {label:'LITA',   art:'kmnz', chipCls:'sp-chip-lita',   pip:'pl'},
+  tina:   {label:'TINA',   art:'kmnz', chipCls:'sp-chip-tina',   pip:'pt'},
+  nero:   {label:'NERO',   art:'kmnz', chipCls:'sp-chip-nero',   pip:'pn'},
+  yomi:   {label:'ヨミ',   art:'vesp', chipCls:'sp-chip-yomi',   pip:'py'},
+  kasuka: {label:'カスカ', art:'vesp', chipCls:'sp-chip-kasuka', pip:'pk'},
+  xiden:  {label:'XIDEN',  art:'xiden',chipCls:'sp-chip-xiden',  pip:'px'},
+  moco:   {label:'MOCO',   art:'honk', chipCls:'sp-chip-moco',   pip:'pm'},
+  bambi:  {label:'BAMBI',  art:'honk', chipCls:'sp-chip-bambi',  pip:'pb'},
+};
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+const pipMap = {
+  lita:{c:'pl',l:'L'}, tina:{c:'pt',l:'T'}, nero:{c:'pn',l:'N'},
+  yomi:{c:'py',l:'Y'}, kasuka:{c:'pk',l:'K'}, xiden:{c:'px',l:'X'},
+  moco:{c:'pm',l:'M'}, bambi:{c:'pb',l:'B'},
+};
+function pips(ms){
+  return ms.filter(x=>!['unit','collab'].includes(x))
+    .map(m=>{ const p=pipMap[m]; return p?`<span class="mpip ${p.c}" title="${m}">${p.l}</span>`:''; })
+    .join('');
+}
+function ttag(tp){
+  return tp==='orig'?'<span class="stp to">ORIGINAL</span>':tp==='cover'?'<span class="stp tc">COVER</span>':'<span class="stp tco">COLLAB</span>';
+}
+function atag(art){
+  return art==='kmnz'?'<span class="ptag tagk" style="font-size:8px;padding:1px 4px;">KMNZ</span>'
+        :art==='vesp'?'<span class="ptag tagv" style="font-size:8px;padding:1px 4px;">VESPERBELL</span>'
+        :art==='xiden'?'<span class="ptag tagx" style="font-size:8px;padding:1px 4px;">XIDEN</span>'
+        :art==='honk'?'<span class="ptag tagh" style="font-size:8px;padding:1px 4px;">HTH</span>':'';
+}
+function sortArr(arr,mode){
+  const a=[...arr];
+  if(mode==='new')  return a.sort((x,y)=>y.y-x.y||x.t.localeCompare(y.t,'ja'));
+  if(mode==='old')  return a.sort((x,y)=>x.y-y.y||x.t.localeCompare(y.t,'ja'));
+  if(mode==='title')return a.sort((x,y)=>x.t.localeCompare(y.t,'ja'));
+  return a;
+}
+function artCls(art){return art==='kmnz'?'sk':art==='vesp'?'sv':art==='xiden'?'sx':art==='honk'?'sh':'sco';}
+function thumbHTML(s){
+  if(s.id){
+    return `<img src="https://i.ytimg.com/vi/${s.id}/mqdefault.jpg" alt="${s.t.replace(/"/g,'')}" loading="lazy"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="snoth" style="display:none">🎵</div>
+    <div class="play-icon">▶</div>`;
+  }
+  return `<div class="snoth">🎵</div>`;
+}
+function cardHTML(s,art){
+  const extMark=s.ext?'<span class="stp" style="background:rgba(255,255,255,.04);color:var(--mu);border:1px solid rgba(255,255,255,.1);">外部</span>':'';
+  const spMark=s.sp?`<a class="sp-badge" href="${s.sp}" target="_blank" onclick="event.stopPropagation()" title="Spotifyで聴く">♪</a>`:'';
+  const ytUrl=s.id?`https://www.youtube.com/watch?v=${s.id}`:'';
+  // サムネイル部分
+  let thumbPart;
+  if(s.id){
+    thumbPart=`<a href="${ytUrl}" target="_blank" class="sth-link" onclick="event.stopPropagation()" title="YouTubeで見る">
+      <div class="sth">${thumbHTML(s)}<div class="yt-overlay"><div class="yt-btn">▶ YouTubeで見る</div></div></div>
+    </a>`;
+  } else {
+    thumbPart=`<div class="sth sth-noid" onclick="openM(this.closest('.sc'))" style="cursor:pointer">
+      <div class="snoth">🎵</div>
+    </div>`;
+  }
+  return `<div class="sc ${artCls(art)}" data-id="${s.id||''}" data-t="${s.t.replace(/"/g,'&quot;')}"
+    data-y="${s.y}" data-tp="${s.tp}" data-m="${(s.m||[]).join(',')}" data-sp="${s.sp||''}" data-art="${art}">
+    ${thumbPart}
+    <div class="si" onclick="openM(this.closest('.sc'))">
+      <div class="sttl">${s.t}</div>
+      <div class="smeta">${ttag(s.tp)}<span class="syr">${s.y}</span>${pips(s.m||[])}${extMark}${spMark}</div>
+    </div>
+  </div>`;
+}
+function collabCardHTML(s){
+  const artBadges=(s.artists||[]).map(a=>atag(a)).join('');
+  const ytUrl=s.id?`https://www.youtube.com/watch?v=${s.id}`:'';
+  let thumbPart;
+  if(s.id){
+    thumbPart=`<a href="${ytUrl}" target="_blank" class="sth-link" onclick="event.stopPropagation()" title="YouTubeで見る">
+      <div class="sth"><img src="https://i.ytimg.com/vi/${s.id}/mqdefault.jpg" alt="" loading="lazy"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="snoth" style="display:none">🎵</div><div class="play-icon">▶</div>
+      <div class="yt-overlay"><div class="yt-btn">▶ YouTubeで見る</div></div></div>
+    </a>`;
+  } else {
+    thumbPart=`<div class="sth sth-noid" onclick="openM(this.closest('.sc'))" style="cursor:pointer"><div class="snoth">🎵</div></div>`;
+  }
+  return `<div class="sc sco" data-id="${s.id||''}" data-t="${s.t.replace(/"/g,'&quot;')}"
+    data-y="${s.y}" data-tp="collab" data-sp="${s.sp||''}" data-art="collab">
+    ${thumbPart}
+    <div class="si" onclick="openM(this.closest('.sc'))">
+      <div class="sttl">${s.t}${s.note?`<span style="font-size:9px;color:var(--mu2);display:block;">${s.note}</span>`:''}</div>
+      <div class="smeta"><span class="stp tco">COLLAB</span><span class="syr">${s.y}</span>${artBadges}</div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════
+function renderGrid(art){
+  const sorted=sortArr(DB[art],sortMode);
+  document.getElementById('g-'+art).innerHTML=sorted.map(s=>cardHTML(s,art)).join('');
+}
+function init(){
+  buildDB();
+  ['kmnz','vesp','xiden','honk'].forEach(art=>{
+    renderGrid(art);
+    document.getElementById('cnt-'+art).textContent=DB[art].length+'曲';
+  });
+  document.getElementById('mems-kmnz').style.display='';
+  document.getElementById('type-kmnz').style.display='flex';
+  applyFilter('kmnz');
+  updateCnt();
+}
+
+// ══════════════════════════════════════════════════════
+// SORT
+// ══════════════════════════════════════════════════════
+function setSort(mode,btn){
+  sortMode=mode;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  ['kmnz','vesp','xiden','honk'].forEach(art=>{renderGrid(art);applyFilter(art);});
+  if(document.getElementById('panel-collab').classList.contains('active')){
+    renderCollabPanel([...selGroups]);
+  }
+  if(document.getElementById('panel-singer-collab').classList.contains('active')){
+    renderSingerCollabPanel([...selSingers]);
+  }
+  updateCnt();
+}
+
+// ══════════════════════════════════════════════════════
+// GROUP SELECTION
+// ══════════════════════════════════════════════════════
+const grpCls={kmnz:'gk',vesp:'gv',xiden:'gx',honk:'gh'};
+function selGroup(art,btn){
+  const wasOn=btn.classList.contains('on');
+  if(wasOn&&selGroups.size===1) return;
+  if(wasOn){
+    selGroups.delete(art);
+    btn.classList.remove('on');
+    document.getElementById('mems-'+art).style.display='none';
+    document.getElementById('type-'+art).style.display='none';
+    // このアーティストの歌い手選択を全解除
+    document.querySelectorAll(`.sb-singer[data-art="${art}"]`).forEach(b=>{
+      b.classList.remove('singer-on');
+      selSingers.delete(b.dataset.singer);
+    });
+  } else {
+    selGroups.add(art);
+    btn.classList.add('on');
+    document.getElementById('mems-'+art).style.display='';
+    document.getElementById('type-'+art).style.display='flex';
+  }
+  updateView();
+}
+
+// ══════════════════════════════════════════════════════
+// SINGER TOGGLE — 歌い手個別選択
+// ══════════════════════════════════════════════════════
+function toggleSinger(btn){
+  const singer = btn.dataset.singer;
+  const art    = btn.dataset.art;
+
+  if(selSingers.has(singer)){
+    // 解除
+    selSingers.delete(singer);
+    btn.classList.remove('singer-on');
+  } else {
+    // 選択 — このアーティストのパネルを選択状態に
+    selSingers.add(singer);
+    btn.classList.add('singer-on');
+    // アーティストグループが未選択なら選択
+    if(!selGroups.has(art)){
+      selGroups.add(art);
+      const grpBtn = document.getElementById('grp-'+art);
+      if(grpBtn) grpBtn.classList.add('on');
+      document.getElementById('mems-'+art).style.display='';
+      document.getElementById('type-'+art).style.display='flex';
+    }
+  }
+  updateView();
+}
+
+function updateView(){
+  const arts=[...selGroups];
+  const singers=[...selSingers];
+
+  // 全パネル非表示
+  ['kmnz','vesp','xiden','honk','collab','singer-collab'].forEach(id=>{
+    const el = document.getElementById('panel-'+id);
+    if(el) el.classList.remove('active');
+  });
+
+  // 歌い手が1人以上選択されている → 歌い手コラボパネル
+  if(singers.length > 0){
+    document.getElementById('panel-singer-collab').classList.add('active');
+    document.getElementById('sbs-singer-collab').style.display='';
+    document.getElementById('sbs-collab').style.display='none';
+    renderSingerCollabPanel(singers);
+  }
+  // 複数アーティスト選択（歌い手なし） → アーティストコラボパネル
+  else if(arts.length > 1){
+    document.getElementById('panel-collab').classList.add('active');
+    document.getElementById('sbs-collab').style.display='';
+    document.getElementById('sbs-singer-collab').style.display='none';
+    const names=arts.map(a=>({kmnz:'KMNZ',vesp:'VESPERBELL',xiden:'XIDEN',honk:'HONK THE HORN'}[a]));
+    document.getElementById('collab-detect-txt').textContent=names.join(' × ')+' のコラボを表示中';
+    renderCollabPanel(arts);
+  }
+  // 単独アーティスト → そのパネル
+  else {
+    document.getElementById('panel-'+arts[0]).classList.add('active');
+    document.getElementById('sbs-collab').style.display='none';
+    document.getElementById('sbs-singer-collab').style.display='none';
+  }
+  updateCnt();
+}
+
+// ── 歌い手コラボパネル描画 ──────────────────────────────
+function renderSingerCollabPanel(singers){
+  // partner chips
+  let ph='';
+  singers.forEach((s,i)=>{
+    const meta=SINGER_META[s];
+    if(!meta) return;
+    if(i>0) ph+='<span class="sp-plus">×</span>';
+    ph+=`<span class="sp-chip ${meta.chipCls}">
+      <span class="pip ${meta.pip}" style="width:14px;height:14px;font-size:6px">${meta.label[0]}</span>
+      ${meta.label}
+    </span>`;
+  });
+  document.getElementById('singer-partners').innerHTML=ph;
+
+  // サイドバーの説明テキスト
+  const names=singers.map(s=>SINGER_META[s]?.label||s).join(' × ');
+  document.getElementById('singer-collab-txt').textContent=names+' のコラボを表示中';
+
+  // 全曲からコラボ曲を収集
+  // 条件: tp==='collab' かつ 選択中の歌い手が全員含まれる（AND条件）
+  const allSongs=[...Object.values(DB).flat()];
+  const deduped=[...new Map(allSongs.map(s=>[s.t+s.y,s])).values()];
+  const collabSongs=deduped.filter(s=>{
+    if(s.tp!=='collab') return false;
+    const members=s.m||[];
+    // 選択歌い手が1人: その歌い手が含まれる全コラボ
+    if(singers.length===1){
+      return members.includes(singers[0]);
+    }
+    // 複数: 選択歌い手が全員含まれる（または同アーティスト内なら曲IDが同じ曲を束ねて）
+    // まずAND条件、それで0件ならOR条件にフォールバック
+    const matchAll = singers.every(singer=>members.includes(singer));
+    if(matchAll) return true;
+    return singers.some(singer=>members.includes(singer));
+  });
+
+  const sorted=sortArr(collabSongs,sortMode);
+  const grid=document.getElementById('g-singer-collab');
+
+  if(sorted.length===0){
+    grid.innerHTML='';
+    document.getElementById('e-singer-collab').style.display='block';
+  } else {
+    // 歌い手コラボカード（アーティストを特定して色付け）
+    grid.innerHTML=sorted.map(s=>{
+      const art=s.art||(s.cw&&s.cw[0])||'collab';
+      return singerCollabCardHTML(s,art);
+    }).join('');
+    document.getElementById('e-singer-collab').style.display='none';
+  }
+}
+
+function singerCollabCardHTML(s,art){
+  const ytUrl=s.id?`https://www.youtube.com/watch?v=${s.id}`:'';
+  const acls={kmnz:'sk',vesp:'sv',xiden:'sx',honk:'sh'}[art]||'sco';
+
+  let thumbPart;
+  if(s.id){
+    thumbPart=`<a href="${ytUrl}" target="_blank" class="sth-link" onclick="event.stopPropagation()" title="YouTubeで見る">
+      <div class="sth">
+        <img src="https://i.ytimg.com/vi/${s.id}/mqdefault.jpg" alt="" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="snoth" style="display:none">🎵</div>
+        <div class="play-icon">▶</div>
+        <div class="yt-overlay"><div class="yt-btn">▶ YouTubeで見る</div></div>
+      </div>
+    </a>`;
+  } else {
+    thumbPart=`<div class="sth sth-noid" onclick="openM(this.closest('.sc'))" style="cursor:pointer">
+      <div class="snoth">🎵</div>
+    </div>`;
+  }
+
+  // 参加歌い手バッジ
+  const singerBadges=(s.m||[])
+    .filter(m=>!['unit','collab'].includes(m)&&SINGER_META[m])
+    .map(m=>{
+      const meta=SINGER_META[m];
+      return `<span class="pip ${meta.pip}" style="width:13px;height:13px;font-size:6px" title="${meta.label}">${meta.label[0]}</span>`;
+    }).join('');
+
+  const extMark=s.ext?'<span class="stp" style="background:rgba(255,255,255,.04);color:var(--mu);border:1px solid rgba(255,255,255,.1);">外部</span>':'';
+
+  return `<div class="sc ${acls}" data-id="${s.id||''}" data-t="${s.t.replace(/"/g,'&quot;')}"
+    data-y="${s.y}" data-tp="${s.tp}" data-m="${(s.m||[]).join(',')}" data-sp="${s.sp||''}" data-art="${art}">
+    ${thumbPart}
+    <div class="si" onclick="openM(this.closest('.sc'))">
+      <div class="sttl">${s.t}${s.note?`<span style="font-size:9px;color:var(--mu2);display:block">${s.note}</span>`:''}</div>
+      <div class="smeta"><span class="stp tco">COLLAB</span><span class="syr">${s.y}</span>${singerBadges}${extMark}</div>
+    </div>
+  </div>`;
+}
+function renderCollabPanel(arts){
+  const cls={kmnz:'cpk',vesp:'cpv',xiden:'cpx',honk:'cph'};
+  const nm={kmnz:'KMNZ',vesp:'VESPERBELL',xiden:'XIDEN',honk:'HONK THE HORN'};
+  let ph='';
+  arts.forEach((a,i)=>{ if(i>0)ph+='<span class="cp-plus">×</span>'; ph+=`<span class="cp-b ${cls[a]}">${nm[a]}</span>`; });
+  document.getElementById('collab-partners').innerHTML=ph;
+  const sorted=sortArr(DB.collab,sortMode);
+  const matched=sorted.filter(c=>arts.some(a=>c.artists.includes(a)));
+  const grid=document.getElementById('g-collab');
+  if(matched.length===0){ grid.innerHTML=''; document.getElementById('e-collab').style.display='block'; }
+  else { grid.innerHTML=matched.map(s=>collabCardHTML(s)).join(''); document.getElementById('e-collab').style.display='none'; }
+}
+
+// ══════════════════════════════════════════════════════
+// MEMBER / TYPE FILTER
+// ══════════════════════════════════════════════════════
+function selMember(btn){
+  const art=btn.dataset.art, m=btn.dataset.m;
+  document.querySelectorAll(`.sb-mem[data-art="${art}"]`).forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  st[art].m = (m==='unit'||m===art)?'all':(m==='collab'?'collab':m);
+  applyFilter(art); updateCnt();
+}
+function selType(btn){
+  const art=btn.dataset.art, tp=btn.dataset.tp;
+  if(st[art].tp===tp){ st[art].tp=''; btn.classList.remove('on'); }
+  else { document.querySelectorAll(`.tchip[data-art="${art}"]`).forEach(b=>b.classList.remove('on')); st[art].tp=tp; btn.classList.add('on'); }
+  applyFilter(art); updateCnt();
+}
+function applyFilter(art){
+  const s=st[art]; let n=0;
+  document.querySelectorAll(`#g-${art} .sc`).forEach(c=>{
+    const ms=c.dataset.m.split(','), tp=c.dataset.tp;
+    const mok=s.m==='all'||ms.includes(s.m)||(s.m!=='collab'&&ms.includes('unit'));
+    const tok=!s.tp||tp===s.tp;
+    const show=mok&&tok; c.classList.toggle('gone',!show); if(show)n++;
+  });
+  document.getElementById('e-'+art).style.display=n?'none':'block';
+}
+function updateCnt(){
+  const arts=[...selGroups];
+  const singers=[...selSingers];
+  if(singers.length>0){
+    const n=document.querySelectorAll('#g-singer-collab .sc').length;
+    document.getElementById('toolbar-cnt').textContent=`${n} 曲`;
+  } else if(arts.length===1){
+    const art=arts[0];
+    const v=document.querySelectorAll(`#g-${art} .sc:not(.gone)`).length;
+    const t=document.querySelectorAll(`#g-${art} .sc`).length;
+    document.getElementById('toolbar-cnt').textContent=`${v} / ${t} 曲`;
+  } else {
+    document.getElementById('toolbar-cnt').textContent=document.querySelectorAll('#g-collab .sc:not(.gone)').length+' 曲';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SIDEBAR MOBILE
+// ══════════════════════════════════════════════════════
+function toggleSB(){ document.getElementById('sidebar').classList.toggle('open'); }
+
+// ══════════════════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════════════════
+function openM(c){
+  const id=c.dataset.id, t=c.dataset.t, y=c.dataset.y, tp=c.dataset.tp, sp=c.dataset.sp, art=c.dataset.art;
+  const artName={kmnz:'KMNZ',vesp:'VESPERBELL',xiden:'XIDEN',honk:'HONK THE HORN'}[art]||'';
+  const tpcls=tp==='orig'?'to':tp==='cover'?'tc':'tco';
+  const tptxt=tp==='orig'?'ORIGINAL':tp==='cover'?'COVER':'COLLAB';
+  document.getElementById('mtitl').textContent=t;
+  document.getElementById('mtags').innerHTML=`<span class="syr" style="font-size:12px;">${y}</span><span class="stp ${tpcls}">${tptxt}</span>${art!=='collab'?atag(art):''}`;
+  const yturl=id?`https://www.youtube.com/watch?v=${id}`:`https://www.youtube.com/results?search_query=${encodeURIComponent(t+(artName?' '+artName:''))}`;
+  document.getElementById('mlnks').innerHTML=`<a class="ml mlyt" href="${yturl}" target="_blank">${id?'▶ YouTubeで見る':'🔍 YouTubeで検索'}</a>`+(sp?`<a class="ml mlsp" href="${sp}" target="_blank">♪ Spotify</a>`:'');
+  document.getElementById('mvid-wrap').innerHTML=id?`<div class="mvid"><iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen></iframe></div>`:`<div class="mnovid">🎵 YouTube動画ID未登録<br><span style="font-size:10px;opacity:.5;">上のボタンで検索できます</span></div>`;
+  document.getElementById('mbg').classList.add('open');
+  document.getElementById('sidebar').classList.remove('open');
+}
+function mclose(){ document.getElementById('mbg').classList.remove('open'); document.getElementById('mvid-wrap').innerHTML=''; }
+function mclickbg(e){ if(e.target===document.getElementById('mbg')) mclose(); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ mclose(); } });
+
+// ══════════════════════════════════════════════════════
+// ADMIN — パスワードはここで設定
+// ══════════════════════════════════════════════════════
+const ADMIN_PW = '0125';
+
+let admArt='kmnz';
+let isLoggedIn=false;
+
+function openAdmin(e){
+  e.preventDefault();
+  document.getElementById('admin-overlay').classList.add('open');
+  if(isLoggedIn){ showAdmPanel(); }
+  else { document.getElementById('adm-login-wrap').style.display='block'; document.getElementById('adm-panel-wrap').style.display='none'; }
+}
+function closeAdmin(){
+  document.getElementById('admin-overlay').classList.remove('open');
+  window.history.replaceState(null,'',window.location.pathname);
+}
+function doLogin(){
+  const pw=document.getElementById('adm-pw-input').value;
+  if(pw===ADMIN_PW){ isLoggedIn=true; showAdmPanel(); document.getElementById('adm-err').style.display='none'; }
+  else { document.getElementById('adm-err').style.display='block'; }
+}
+function doLogout(){ isLoggedIn=false; document.getElementById('adm-pw-input').value=''; closeAdmin(); }
+function showAdmPanel(){
+  document.getElementById('adm-login-wrap').style.display='none';
+  document.getElementById('adm-panel-wrap').style.display='block';
+  refreshAdmList();
+}
+
+// admin artist select
+const memberOpts={
+  kmnz:['unit','lita','tina','nero','collab'],
+  vesp:['unit','yomi','kasuka','collab'],
+  xiden:['xiden','collab'],
+  honk:['unit','moco','bambi'],
+  collab:['kmnz','vesp','xiden','honk'],
+};
+let admTabBtns=[];
+function admSelArt(art,btn){
+  admArt=art;
+  document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('on-k','on-v','on-x','on-h','on-c'));
+  const cls={kmnz:'on-k',vesp:'on-v',xiden:'on-x',honk:'on-h',collab:'on-c'}[art];
+  btn.classList.add(cls);
+  // update member select
+  const sel=document.getElementById('af-member');
+  sel.innerHTML=memberOpts[art].map(m=>`<option value="${m}">${m}</option>`).join('');
+  // collab: show artists multi
+  refreshAdmList();
+}
+function refreshAdmList(){
+  const list=DB[admArt]||[];
+  document.getElementById('adm-list-cnt').textContent=`(${list.length}曲)`;
+  const extra=loadExtra();
+  const extraList=extra[admArt]||[];
+  document.getElementById('adm-tbody').innerHTML=list.map((s,i)=>{
+    const isExtra=i>=BASE_DATA[admArt].length;
+    return `<tr>
+      <td class="td-title" title="${s.t}">${s.t}</td>
+      <td>${s.y}</td>
+      <td>${s.tp}</td>
+      <td>${(s.m||s.artists||[]).join(', ')}</td>
+      <td style="font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--mu)">${s.id||'—'}</td>
+      <td class="td-actions">
+        ${isExtra?`<button class="btn-del" onclick="delSong(${i})">削除</button>`:'<span style="font-size:9px;color:var(--mu)">固定</span>'}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function addSong(){
+  const title=document.getElementById('af-title').value.trim();
+  const year=parseInt(document.getElementById('af-year').value)||new Date().getFullYear();
+  const tp=document.getElementById('af-tp').value;
+  const member=document.getElementById('af-member').value;
+  const ytid=document.getElementById('af-ytid').value.trim();
+  const sp=document.getElementById('af-sp').value.trim();
+  const note=document.getElementById('af-note').value.trim();
+  const ext=document.getElementById('af-ext').checked;
+  if(!title){ alert('タイトルを入力してください'); return; }
+  const newSong={t:title, y:year, tp};
+  if(admArt==='collab'){ newSong.id=ytid; newSong.sp=sp; newSong.artists=[member]; newSong.note=note; }
+  else { newSong.m=[member]; newSong.id=ytid; newSong.sp=sp; newSong.note=note||undefined; newSong.ext=ext||undefined; }
+  const extra=loadExtra();
+  if(!extra[admArt]) extra[admArt]=[];
+  extra[admArt].push(newSong);
+  saveExtra(extra);
+  buildDB();
+  // update counts
+  ['kmnz','vesp','xiden','honk'].forEach(art=>document.getElementById('cnt-'+art).textContent=DB[art].length+'曲');
+  renderGrid(admArt!=='collab'?admArt:'kmnz');
+  applyFilter(admArt!=='collab'?admArt:'kmnz');
+  refreshAdmList();
+  // clear form
+  document.getElementById('af-title').value='';
+  document.getElementById('af-ytid').value='';
+  document.getElementById('af-sp').value='';
+  document.getElementById('af-note').value='';
+  document.getElementById('af-ext').checked=false;
+  const msg=document.getElementById('af-msg');
+  msg.style.display='inline'; setTimeout(()=>msg.style.display='none',2000);
+}
+
+function delSong(idx){
+  const extra=loadExtra();
+  const baseLen=BASE_DATA[admArt].length;
+  const extraIdx=idx-baseLen;
+  if(extraIdx<0){ alert('固定データは削除できません'); return; }
+  if(!confirm('削除しますか？')) return;
+  if(!extra[admArt]) return;
+  extra[admArt].splice(extraIdx,1);
+  saveExtra(extra);
+  buildDB();
+  ['kmnz','vesp','xiden','honk'].forEach(art=>document.getElementById('cnt-'+art).textContent=DB[art].length+'曲');
+  if(admArt!=='collab'){ renderGrid(admArt); applyFilter(admArt); }
+  refreshAdmList();
+}
+
+function exportJSON(){
+  const extra=loadExtra();
+  const blob=new Blob([JSON.stringify(extra,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='rkmusic_hub_extra.json'; a.click();
+}
+function resetData(){
+  if(!confirm('管理画面から追加したデータをすべて削除しますか？\n（組み込みデータは残ります）')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  buildDB();
+  ['kmnz','vesp','xiden','honk'].forEach(art=>{ renderGrid(art); applyFilter(art); document.getElementById('cnt-'+art).textContent=DB[art].length+'曲'; });
+  refreshAdmList();
+}
+
+// init member select for admin
+document.getElementById('af-member').innerHTML=memberOpts['kmnz'].map(m=>`<option value="${m}">${m}</option>`).join('');
+
+// ══════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════
+document.getElementById('mems-kmnz').style.display='';
+document.getElementById('type-kmnz').style.display='flex';
+init();
+</script>
+</body>
+</html>
