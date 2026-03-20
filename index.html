@@ -194,6 +194,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .adm-close{margin-left:auto;background:none;border:1px solid var(--bd2);color:var(--mu2);font-size:13px;cursor:pointer;border-radius:2px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-weight:700;transition:all .14s}.adm-close:hover{color:var(--tx);border-color:var(--bd3)}
 
 /* login */
+
+/* ── 管理画面 Singer チェックボックス ── */
+.singer-chk input[type=checkbox]{ cursor:pointer }
+.singer-chk{ cursor:pointer }
+
 /* ── ログイン画面 補完スタイル ── */
 .adm-login{max-width:340px;margin:80px auto;background:var(--sf);border:1px solid var(--bd2);border-radius:8px;padding:36px 28px;display:flex;flex-direction:column;gap:0}
 .adm-login-logo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:24px}
@@ -589,13 +594,13 @@ footer a{color:var(--mu);text-decoration:none}footer a:hover{color:var(--tx)}
       </div>
     </div>
 
-    <!-- add form -->
+    <!-- 曲フォーム（追加・編集共用） -->
     <div class="adm-sec">
-      <div class="adm-sec-title">＋ 曲を追加</div>
-      <div class="adm-form">
+      <div class="adm-sec-title" id="af-form-title">＋ 曲を追加</div>
+      <div class="adm-form" id="af-form">
         <div class="adm-form-grid">
           <div class="full">
-            <label class="adm-label">タイトル *</label>
+            <label class="adm-label">曲タイトル *</label>
             <input class="adm-input" id="af-title" placeholder="曲名">
           </div>
           <div>
@@ -610,30 +615,48 @@ footer a{color:var(--mu);text-decoration:none}footer a:hover{color:var(--tx)}
               <option value="collab">COLLAB</option>
             </select>
           </div>
+          <!-- Artist タグ -->
           <div>
-            <label class="adm-label">メンバー *</label>
-            <select class="adm-select" id="af-member"></select>
+            <label class="adm-label">Artist タグ *</label>
+            <select class="adm-select" id="af-artist" onchange="admArtistChange(this.value)">
+              <option value="kmnz">KMNZ</option>
+              <option value="vesp">VESPERBELL</option>
+              <option value="xiden">XIDEN</option>
+              <option value="honk">HONK THE HORN</option>
+            </select>
+          </div>
+          <!-- Singer タグ（チェックボックス複数選択） -->
+          <div class="full">
+            <label class="adm-label">Singer タグ（複数選択可）</label>
+            <div id="af-singer-wrap" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"></div>
           </div>
           <div>
             <label class="adm-label">YouTube ID</label>
-            <input class="adm-input" id="af-ytid" placeholder="例: 7kTUgS414QE">
+            <div style="display:flex;gap:6px;align-items:center">
+              <input class="adm-input" id="af-ytid" placeholder="例: 7kTUgS414QE" oninput="previewThumb(this.value)" style="flex:1">
+              <a id="af-yt-preview-link" href="#" target="_blank" style="display:none;flex-shrink:0">
+                <img id="af-yt-preview-img" src="" alt="" style="width:80px;height:45px;object-fit:cover;border-radius:3px;border:1px solid var(--bd2)">
+              </a>
+            </div>
+            <div style="font-size:10px;color:var(--mu);margin-top:3px">YouTube URLの ?v= 以降の文字列</div>
           </div>
           <div>
             <label class="adm-label">Spotify URL</label>
             <input class="adm-input" id="af-sp" placeholder="https://open.spotify.com/track/...">
           </div>
-          <div class="full">
-            <label class="adm-label">メモ（外部コラボ等）</label>
+          <div>
+            <label class="adm-label">メモ</label>
             <input class="adm-input" id="af-note" placeholder="外部コラボ・EP名 など">
           </div>
-          <div class="full" style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px">
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:var(--mu)">
               <input type="checkbox" id="af-ext"> 外部/チャンネル外コラボ
             </label>
           </div>
-          <div class="full" style="margin-top:6px">
-            <button class="adm-btn adm-btn-success" onclick="addSong()">✚ 追加する</button>
-            <span id="af-msg" style="font-size:11px;margin-left:10px;color:var(--x1);display:none">追加しました！</span>
+          <div class="full" style="margin-top:6px;display:flex;gap:8px;align-items:center">
+            <button class="adm-btn adm-btn-success" id="af-submit-btn" onclick="submitSong()">✚ 追加する</button>
+            <button class="adm-btn" id="af-cancel-btn" style="display:none;border:1px solid var(--bd2);color:var(--mu)" onclick="cancelEdit()">キャンセル</button>
+            <span id="af-msg" style="font-size:11px;color:var(--x1);display:none">保存しました！</span>
           </div>
         </div>
       </div>
@@ -641,10 +664,15 @@ footer a{color:var(--mu);text-decoration:none}footer a:hover{color:var(--tx)}
 
     <!-- song list -->
     <div class="adm-sec">
-      <div class="adm-sec-title">曲一覧 <span id="adm-list-cnt" style="font-size:10px;color:var(--mu);font-weight:400;letter-spacing:0;text-transform:none"></span></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <div class="adm-sec-title" style="margin:0">曲一覧 <span id="adm-list-cnt" style="font-size:10px;color:var(--mu);font-weight:400;letter-spacing:0;text-transform:none"></span></div>
+        <input class="adm-input" id="adm-search" placeholder="曲名で検索..." oninput="filterAdmList(this.value)"
+          style="max-width:200px;padding:5px 9px;font-size:11px">
+        <span style="font-size:10px;color:var(--mu);margin-left:auto">✏️ 全曲編集可能</span>
+      </div>
       <div style="overflow-x:auto">
         <table class="adm-table">
-          <thead><tr><th>タイトル</th><th>年</th><th>タイプ</th><th>メンバー</th><th>YouTube ID</th><th>操作</th></tr></thead>
+          <thead><tr><th>サムネイル</th><th>タイトル</th><th>年</th><th>タイプ</th><th>Artist</th><th>Singer</th><th>YouTube ID</th><th>操作</th></tr></thead>
           <tbody id="adm-tbody"></tbody>
         </table>
       </div>
@@ -655,9 +683,12 @@ footer a{color:var(--mu);text-decoration:none}footer a:hover{color:var(--tx)}
       <div class="adm-sec-title">データ管理</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="adm-btn adm-btn-primary" onclick="exportJSON()">📥 JSONエクスポート</button>
-        <button class="adm-btn" style="border:1px solid var(--bd2);color:var(--mu)" onclick="resetData()">🗑 追加データをリセット</button>
+        <button class="adm-btn" style="border:1px solid rgba(255,82,82,.3);color:#ff5252" onclick="resetAllData()">🗑 全編集データをリセット</button>
       </div>
-      <p style="font-size:10px;color:var(--mu);margin-top:8px;line-height:1.6">エクスポートしたJSONファイルをHTMLのソースコードに貼り付けると永続保存できます。</p>
+      <p style="font-size:10px;color:var(--mu);margin-top:8px;line-height:1.6">
+        追加・編集したデータはこのブラウザに保存されています。<br>
+        「JSONエクスポート」でバックアップし、HTMLの BASE_DATA に書き込むと永続保存できます。
+      </p>
     </div>
   </div>
 </div>
@@ -761,9 +792,12 @@ const BASE_DATA = {
 };
 
 // ══════════════════════════════════════════════════════
-// STORAGE — localStorageから追加データをマージ
+// STORAGE
+//  extra_v1  : 追加データ（新規曲）
+//  edits_v1  : 既存曲の上書き編集データ  key="{art}_{index}"
 // ══════════════════════════════════════════════════════
-const STORAGE_KEY = 'rkmusic_hub_extra_v1';
+const STORAGE_KEY      = 'rkmusic_hub_extra_v1';
+const STORAGE_EDIT_KEY = 'rkmusic_hub_edits_v1';
 
 function loadExtra(){
   try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); }catch(e){ return {}; }
@@ -771,13 +805,25 @@ function loadExtra(){
 function saveExtra(obj){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }catch(e){}
 }
+function loadEdits(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_EDIT_KEY)||'{}'); }catch(e){ return {}; }
+}
+function saveEdits(obj){
+  try{ localStorage.setItem(STORAGE_EDIT_KEY, JSON.stringify(obj)); }catch(e){}
+}
 
-// 実際に使うデータ (BASE + extra)
+// 実際に使うデータ (BASE + edits適用 + extra追加)
 let DB = {};
 function buildDB(){
   const extra = loadExtra();
+  const edits = loadEdits();
   ['kmnz','vesp','xiden','honk','collab'].forEach(art=>{
-    DB[art] = [...(BASE_DATA[art]||[])];
+    // BASE_DATAに編集オーバーレイを適用
+    DB[art] = BASE_DATA[art].map((s,i)=>{
+      const key=`${art}_${i}`;
+      return edits[key] ? Object.assign({},s,edits[key]) : s;
+    });
+    // extraは末尾に追加（extraのインデックスはBASE_DATA.lengthから）
     if(extra[art]) DB[art] = DB[art].concat(extra[art]);
   });
 }
@@ -834,9 +880,83 @@ function sortArr(arr,mode){
   return a;
 }
 function artCls(art){return art==='kmnz'?'sk':art==='vesp'?'sv':art==='xiden'?'sx':art==='honk'?'sh':'sco';}
+// ── サムネイルキャッシュ（localStorageで24h保持）──────────
+const THUMB_CACHE_KEY = 'rkmusic_thumbs_v2';
+const THUMB_TTL = 86400000; // 24h
+
+function _loadThumbCache(){
+  try{
+    const raw=localStorage.getItem(THUMB_CACHE_KEY);
+    if(!raw) return {};
+    const obj=JSON.parse(raw);
+    const now=Date.now();
+    Object.keys(obj).forEach(k=>{ if(now-obj[k].ts>THUMB_TTL) delete obj[k]; });
+    return obj;
+  }catch(e){ return {}; }
+}
+const thumbCache = _loadThumbCache();
+function _saveThumbCache(){ try{ localStorage.setItem(THUMB_CACHE_KEY,JSON.stringify(thumbCache)); }catch(e){} }
+
+// applyThumb: キャッシュのURLをimg要素に適用
+function applyThumb(id){
+  const entry=thumbCache[id];
+  if(!entry) return;
+  document.querySelectorAll(`img[data-ytid="${id}"]`).forEach(img=>{
+    if(img.src!==entry.url) img.src=entry.url;
+  });
+}
+
+// fetchThumbs: YouTube oEmbedで高解像度取得→キャッシュ→img更新
+function fetchThumbs(ids){
+  const uncached=ids.filter(id=>!thumbCache[id]);
+  // キャッシュ済みはすぐ反映
+  ids.filter(id=>thumbCache[id]).forEach(applyThumb);
+  // 未キャッシュをoEmbedで取得（1件ずつ、裏側で非同期）
+  uncached.forEach(id=>{
+    // まず mqdefault で仮表示（既にHTMLで設定済み）
+    // oEmbedで高解像度を取得
+    fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`)
+      .then(r=>r.json())
+      .then(d=>{
+        // maxresdefaultを試す（1280x720）
+        const maxres=`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+        const fallback=d.thumbnail_url||`https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+        // maxresの存在確認
+        const testImg=new Image();
+        testImg.onload=()=>{
+          thumbCache[id]={url:maxres,ts:Date.now()};
+          _saveThumbCache();
+          applyThumb(id);
+        };
+        testImg.onerror=()=>{
+          thumbCache[id]={url:fallback,ts:Date.now()};
+          _saveThumbCache();
+          applyThumb(id);
+        };
+        testImg.src=maxres;
+      })
+      .catch(()=>{
+        // oEmbed失敗時はhqdefaultをキャッシュ
+        const url=`https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+        thumbCache[id]={url,ts:Date.now()};
+        _saveThumbCache();
+        applyThumb(id);
+      });
+  });
+}
+
+// 現在表示中の全img[data-ytid]をまとめてフェッチ
+function fetchVisibleThumbs(){
+  const ids=[...new Set(
+    [...document.querySelectorAll('img[data-ytid]')].map(i=>i.dataset.ytid).filter(Boolean)
+  )];
+  if(ids.length) fetchThumbs(ids);
+}
+
 function thumbHTML(s){
   if(s.id){
-    return `<img src="https://i.ytimg.com/vi/${s.id}/mqdefault.jpg" alt="${s.t.replace(/"/g,'')}" loading="lazy"
+    const cached=thumbCache[s.id]?.url||`https://i.ytimg.com/vi/${s.id}/mqdefault.jpg`;
+    return `<img src="${cached}" data-ytid="${s.id}" alt="${s.t.replace(/"/g,'')}" loading="lazy"
       onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
     <div class="snoth" style="display:none">🎵</div>
     <div class="play-icon">▶</div>`;
@@ -897,6 +1017,7 @@ function collabCardHTML(s){
 function renderGrid(art){
   const sorted=sortArr(DB[art],sortMode);
   document.getElementById('g-'+art).innerHTML=sorted.map(s=>cardHTML(s,art)).join('');
+  setTimeout(fetchVisibleThumbs,50);
 }
 function init(){
   buildDB();
@@ -1076,7 +1197,7 @@ function singerCollabCardHTML(s,art){
   if(s.id){
     thumbPart=`<a href="${ytUrl}" target="_blank" class="sth-link" onclick="event.stopPropagation()" title="YouTubeで見る">
       <div class="sth">
-        <img src="https://i.ytimg.com/vi/${s.id}/mqdefault.jpg" alt="" loading="lazy"
+        <img src="${thumbCache[s.id]?.url||`https://i.ytimg.com/vi/${s.id}/mqdefault.jpg`}" data-ytid="${s.id}" alt="" loading="lazy"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <div class="snoth" style="display:none">🎵</div>
         <div class="play-icon">▶</div>
@@ -1191,16 +1312,31 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ mclose(); } });
 // ══════════════════════════════════════════════════════
 // ADMIN — パスワードはここで設定
 // ══════════════════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════════════════
 const ADMIN_PW = '0125';
 
-let admArt='kmnz';
-let isLoggedIn=false;
+let admArt = 'kmnz';
+let isLoggedIn = false;
+let editMode = null;  // null=新規, {art,idx}=編集中
+
+// 各アーティストのSingerオプション
+const SINGER_OPTS = {
+  kmnz:  [{v:'unit',l:'UNIT（全体）'},{v:'lita',l:'LITA'},{v:'tina',l:'TINA'},{v:'nero',l:'NERO'},{v:'collab',l:'コラボ'}],
+  vesp:  [{v:'unit',l:'DUO（全体）'},{v:'yomi',l:'ヨミ'},{v:'kasuka',l:'カスカ'},{v:'collab',l:'コラボ'}],
+  xiden: [{v:'xiden',l:'XIDEN'},{v:'collab',l:'コラボ'}],
+  honk:  [{v:'unit',l:'DUO（全体）'},{v:'moco',l:'MOCO'},{v:'bambi',l:'BAMBI'}],
+  collab:[{v:'kmnz',l:'KMNZ'},{v:'vesp',l:'VESPERBELL'},{v:'xiden',l:'XIDEN'},{v:'honk',l:'HONK THE HORN'}],
+};
 
 function openAdmin(e){
   e.preventDefault();
   document.getElementById('admin-overlay').classList.add('open');
   if(isLoggedIn){ showAdmPanel(); }
-  else { document.getElementById('adm-login-wrap').style.display='block'; document.getElementById('adm-panel-wrap').style.display='none'; }
+  else {
+    document.getElementById('adm-login-wrap').style.display='block';
+    document.getElementById('adm-panel-wrap').style.display='none';
+  }
 }
 function closeAdmin(){
   document.getElementById('admin-overlay').classList.remove('open');
@@ -1208,120 +1344,279 @@ function closeAdmin(){
 }
 function doLogin(){
   const pw=document.getElementById('adm-pw-input').value;
-  if(pw===ADMIN_PW){ isLoggedIn=true; showAdmPanel(); document.getElementById('adm-err').style.display='none'; }
-  else { document.getElementById('adm-err').style.display='block'; }
+  if(pw===ADMIN_PW){
+    isLoggedIn=true; showAdmPanel();
+    document.getElementById('adm-err').style.display='none';
+  } else {
+    document.getElementById('adm-err').style.display='block';
+    document.getElementById('adm-pw-input').value='';
+  }
 }
 function doLogout(){ isLoggedIn=false; document.getElementById('adm-pw-input').value=''; closeAdmin(); }
 function showAdmPanel(){
   document.getElementById('adm-login-wrap').style.display='none';
   document.getElementById('adm-panel-wrap').style.display='block';
+  admArtistChange(admArt);
   refreshAdmList();
 }
 
-// admin artist select
-const memberOpts={
-  kmnz:['unit','lita','tina','nero','collab'],
-  vesp:['unit','yomi','kasuka','collab'],
-  xiden:['xiden','collab'],
-  honk:['unit','moco','bambi'],
-  collab:['kmnz','vesp','xiden','honk'],
-};
-let admTabBtns=[];
-function admSelArt(art,btn){
+// ── アーティストタブ切替 ──
+function admSelArt(art, btn){
   admArt=art;
+  cancelEdit();
   document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('on-k','on-v','on-x','on-h','on-c'));
-  const cls={kmnz:'on-k',vesp:'on-v',xiden:'on-x',honk:'on-h',collab:'on-c'}[art];
-  btn.classList.add(cls);
-  // update member select
-  const sel=document.getElementById('af-member');
-  sel.innerHTML=memberOpts[art].map(m=>`<option value="${m}">${m}</option>`).join('');
-  // collab: show artists multi
+  btn.classList.add({kmnz:'on-k',vesp:'on-v',xiden:'on-x',honk:'on-h',collab:'on-c'}[art]);
+  const artForForm=(art==='collab')?'kmnz':art;
+  document.getElementById('af-artist').value=artForForm;
+  admArtistChange(artForForm);
   refreshAdmList();
-}
-function refreshAdmList(){
-  const list=DB[admArt]||[];
-  document.getElementById('adm-list-cnt').textContent=`(${list.length}曲)`;
-  const extra=loadExtra();
-  const extraList=extra[admArt]||[];
-  document.getElementById('adm-tbody').innerHTML=list.map((s,i)=>{
-    const isExtra=i>=BASE_DATA[admArt].length;
-    return `<tr>
-      <td class="td-title" title="${s.t}">${s.t}</td>
-      <td>${s.y}</td>
-      <td>${s.tp}</td>
-      <td>${(s.m||s.artists||[]).join(', ')}</td>
-      <td style="font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--mu)">${s.id||'—'}</td>
-      <td class="td-actions">
-        ${isExtra?`<button class="btn-del" onclick="delSong(${i})">削除</button>`:'<span style="font-size:9px;color:var(--mu)">固定</span>'}
-      </td>
-    </tr>`;
-  }).join('');
 }
 
-function addSong(){
-  const title=document.getElementById('af-title').value.trim();
-  const year=parseInt(document.getElementById('af-year').value)||new Date().getFullYear();
-  const tp=document.getElementById('af-tp').value;
-  const member=document.getElementById('af-member').value;
-  const ytid=document.getElementById('af-ytid').value.trim();
-  const sp=document.getElementById('af-sp').value.trim();
-  const note=document.getElementById('af-note').value.trim();
-  const ext=document.getElementById('af-ext').checked;
-  if(!title){ alert('タイトルを入力してください'); return; }
-  const newSong={t:title, y:year, tp};
-  if(admArt==='collab'){ newSong.id=ytid; newSong.sp=sp; newSong.artists=[member]; newSong.note=note; }
-  else { newSong.m=[member]; newSong.id=ytid; newSong.sp=sp; newSong.note=note||undefined; newSong.ext=ext||undefined; }
-  const extra=loadExtra();
-  if(!extra[admArt]) extra[admArt]=[];
-  extra[admArt].push(newSong);
-  saveExtra(extra);
-  buildDB();
-  // update counts
-  ['kmnz','vesp','xiden','honk'].forEach(art=>document.getElementById('cnt-'+art).textContent=DB[art].length+'曲');
-  renderGrid(admArt!=='collab'?admArt:'kmnz');
-  applyFilter(admArt!=='collab'?admArt:'kmnz');
-  refreshAdmList();
-  // clear form
+// ── Artist選択変更でSingerチェックボックスを更新 ──
+function admArtistChange(artVal){
+  const wrap=document.getElementById('af-singer-wrap');
+  if(!wrap) return;
+  const opts=SINGER_OPTS[artVal]||SINGER_OPTS.kmnz;
+  wrap.innerHTML=opts.map(o=>`
+    <label class="singer-chk" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;
+      font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:.05em;color:var(--mu2);
+      padding:4px 10px;border:1px solid var(--bd2);border-radius:20px;transition:all .14s;user-select:none">
+      <input type="checkbox" name="af-singer" value="${o.v}"
+        onchange="updateSingerChk(this)" style="accent-color:var(--co);width:12px;height:12px">
+      ${o.l}
+    </label>`).join('');
+}
+function updateSingerChk(cb){
+  const label=cb.closest('.singer-chk');
+  if(cb.checked){
+    label.style.borderColor='var(--co)'; label.style.color='var(--co)';
+    label.style.background='rgba(200,120,255,.1)';
+  } else {
+    label.style.borderColor='var(--bd2)'; label.style.color='var(--mu2)';
+    label.style.background='transparent';
+  }
+}
+function getSelectedSingers(){
+  return [...document.querySelectorAll('input[name="af-singer"]:checked')].map(c=>c.value);
+}
+function setSelectedSingers(arr){
+  document.querySelectorAll('input[name="af-singer"]').forEach(c=>{
+    c.checked=arr.includes(c.value);
+    updateSingerChk(c);
+  });
+}
+
+// ── YouTubeサムネイルプレビュー ──
+function previewThumb(ytid){
+  const link=document.getElementById('af-yt-preview-link');
+  const img=document.getElementById('af-yt-preview-img');
+  const id=ytid.trim();
+  if(id){
+    img.src=`https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+    link.href=`https://www.youtube.com/watch?v=${id}`;
+    link.style.display='block';
+  } else { link.style.display='none'; }
+}
+
+// ── フォームリセット ──
+function resetAdmForm(){
   document.getElementById('af-title').value='';
+  document.getElementById('af-year').value=new Date().getFullYear();
+  document.getElementById('af-tp').value='orig';
   document.getElementById('af-ytid').value='';
   document.getElementById('af-sp').value='';
   document.getElementById('af-note').value='';
   document.getElementById('af-ext').checked=false;
+  const pl=document.getElementById('af-yt-preview-link');
+  if(pl) pl.style.display='none';
+  setSelectedSingers([]);
+  editMode=null;
+  document.getElementById('af-form-title').textContent='＋ 曲を追加';
+  document.getElementById('af-submit-btn').textContent='✚ 追加する';
+  document.getElementById('af-cancel-btn').style.display='none';
+}
+function cancelEdit(){ resetAdmForm(); }
+
+// ── 編集ボタン押下 ──
+function editSong(art, idx){
+  const s=DB[art][idx];
+  admArt=art;
+  // タブをアクティブに
+  const tabNames={kmnz:'KMNZ',vesp:'VESPERBELL',xiden:'XIDEN',honk:'HONK THE HORN',collab:'コラボ'};
+  const tabCls={kmnz:'on-k',vesp:'on-v',xiden:'on-x',honk:'on-h',collab:'on-c'};
+  document.querySelectorAll('.adm-tab').forEach(b=>{
+    b.classList.remove('on-k','on-v','on-x','on-h','on-c');
+    if(b.textContent.trim()===tabNames[art]) b.classList.add(tabCls[art]);
+  });
+  // フォームに値をセット
+  const artForForm=(art==='collab')?'kmnz':art;
+  document.getElementById('af-artist').value=artForForm;
+  admArtistChange(artForForm);
+  document.getElementById('af-title').value=s.t;
+  document.getElementById('af-year').value=s.y;
+  document.getElementById('af-tp').value=s.tp;
+  document.getElementById('af-note').value=s.note||'';
+  document.getElementById('af-ext').checked=!!s.ext;
+  document.getElementById('af-ytid').value=s.id||'';
+  document.getElementById('af-sp').value=s.sp||'';
+  previewThumb(s.id||'');
+  setTimeout(()=>setSelectedSingers(s.m||s.artists||[]),20);
+  // 編集モードUI
+  editMode={art,idx};
+  document.getElementById('af-form-title').textContent=`✏️ 編集中：${s.t}`;
+  document.getElementById('af-submit-btn').textContent='✅ 保存する';
+  document.getElementById('af-cancel-btn').style.display='inline-block';
+  document.getElementById('af-form').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── 追加・保存（共用） ──
+function submitSong(){
+  const title=document.getElementById('af-title').value.trim();
+  if(!title){ alert('タイトルを入力してください'); return; }
+  const year=parseInt(document.getElementById('af-year').value)||new Date().getFullYear();
+  const tp=document.getElementById('af-tp').value;
+  const artVal=document.getElementById('af-artist').value;
+  const singers=getSelectedSingers();
+  const ytid=document.getElementById('af-ytid').value.trim();
+  const sp=document.getElementById('af-sp').value.trim();
+  const note=document.getElementById('af-note').value.trim();
+  const ext=document.getElementById('af-ext').checked;
+  const members=singers.length>0?singers:['unit'];
+
+  if(editMode){
+    const {art,idx}=editMode;
+    const isBase=idx<BASE_DATA[art].length;
+    if(isBase){
+      const edits=loadEdits();
+      edits[`${art}_${idx}`]={t:title,y:year,tp,m:members,id:ytid,sp};
+      if(note) edits[`${art}_${idx}`].note=note;
+      if(ext)  edits[`${art}_${idx}`].ext=true;
+      saveEdits(edits);
+    } else {
+      const extra=loadExtra();
+      const ei=idx-BASE_DATA[art].length;
+      if(extra[art]&&extra[art][ei]) extra[art][ei]={t:title,y:year,tp,m:members,id:ytid,sp,note:note||undefined,ext:ext||undefined};
+      saveExtra(extra);
+    }
+    buildDB();
+    ['kmnz','vesp','xiden','honk'].forEach(a=>{
+      document.getElementById('cnt-'+a).textContent=DB[a].length+'曲';
+      renderGrid(a); applyFilter(a);
+    });
+  } else {
+    const art=(admArt==='collab')?artVal:admArt;
+    const newSong={t:title,y:year,tp,m:members,id:ytid,sp};
+    if(note) newSong.note=note;
+    if(ext)  newSong.ext=true;
+    const extra=loadExtra();
+    if(!extra[art]) extra[art]=[];
+    extra[art].push(newSong);
+    saveExtra(extra);
+    buildDB();
+    ['kmnz','vesp','xiden','honk'].forEach(a=>{
+      document.getElementById('cnt-'+a).textContent=DB[a].length+'曲';
+    });
+    renderGrid(art); applyFilter(art);
+  }
+  refreshAdmList();
+  resetAdmForm();
   const msg=document.getElementById('af-msg');
-  msg.style.display='inline'; setTimeout(()=>msg.style.display='none',2000);
+  msg.style.display='inline'; setTimeout(()=>msg.style.display='none',2500);
 }
 
-function delSong(idx){
-  const extra=loadExtra();
-  const baseLen=BASE_DATA[admArt].length;
-  const extraIdx=idx-baseLen;
-  if(extraIdx<0){ alert('固定データは削除できません'); return; }
-  if(!confirm('削除しますか？')) return;
-  if(!extra[admArt]) return;
-  extra[admArt].splice(extraIdx,1);
-  saveExtra(extra);
+// ── 削除 ──
+function delSong(art, idx){
+  const s=DB[art][idx];
+  if(!confirm(`「${s.t}」を削除しますか？`)) return;
+  const isBase=idx<BASE_DATA[art].length;
+  if(isBase){
+    const edits=loadEdits();
+    edits[`${art}_${idx}`]=Object.assign({},BASE_DATA[art][idx],{_deleted:true});
+    saveEdits(edits);
+  } else {
+    const extra=loadExtra();
+    const ei=idx-BASE_DATA[art].length;
+    if(extra[art]) extra[art].splice(ei,1);
+    saveExtra(extra);
+  }
   buildDB();
-  ['kmnz','vesp','xiden','honk'].forEach(art=>document.getElementById('cnt-'+art).textContent=DB[art].length+'曲');
-  if(admArt!=='collab'){ renderGrid(admArt); applyFilter(admArt); }
+  ['kmnz','vesp','xiden','honk'].forEach(a=>{
+    document.getElementById('cnt-'+a).textContent=DB[a].length+'曲';
+    renderGrid(a); applyFilter(a);
+  });
   refreshAdmList();
 }
 
+// ── buildDBで_deletedを除外 ──
+const _origBuildDB=buildDB;
+buildDB=function(){
+  _origBuildDB();
+  ['kmnz','vesp','xiden','honk','collab'].forEach(art=>{
+    DB[art]=DB[art].filter(s=>!s._deleted);
+  });
+};
+
+// ── 曲一覧テーブル描画 ──
+let admSearchQuery='';
+function filterAdmList(q){ admSearchQuery=q.toLowerCase(); refreshAdmList(); }
+
+function refreshAdmList(){
+  const rawList=DB[admArt]||[];
+  const edits=loadEdits();
+  // _deletedを除外してから検索フィルター
+  const list=rawList.filter(s=>!s._deleted);
+  const filtered=admSearchQuery?list.filter(s=>s.t.toLowerCase().includes(admSearchQuery)):list;
+  document.getElementById('adm-list-cnt').textContent=`(${filtered.length}/${list.length}曲)`;
+
+  document.getElementById('adm-tbody').innerHTML=filtered.map(s=>{
+    const idx=rawList.indexOf(s);
+    const isBase=idx<(BASE_DATA[admArt]||[]).length;
+    const isEdited=isBase&&edits[`${admArt}_${idx}`]&&!edits[`${admArt}_${idx}`]._deleted;
+    const thumb=s.id
+      ?`<img src="${thumbCache[s.id]?.url||'https://i.ytimg.com/vi/'+s.id+'/mqdefault.jpg'}" data-ytid="${s.id}"
+          style="width:64px;height:36px;object-fit:cover;border-radius:2px"
+          onerror="this.style.display='none'">`
+      :'<div style="width:64px;height:36px;background:var(--sf2);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:14px">🎵</div>';
+    const singerBadges=(s.m||[]).filter(m=>!['unit','collab'].includes(m)).map(m=>{
+      const p=pipMap[m]; return p?`<span class="mpip ${p.c}" style="width:14px;height:14px;font-size:6px" title="${m}">${p.l}</span>`:'';
+    }).join('');
+    const editedMark=isEdited?'<span style="font-size:8px;color:var(--v2);font-family:Rajdhani,sans-serif;display:block;margin-top:2px">EDITED</span>':'';
+    return `<tr>
+      <td style="padding:5px 8px">${thumb}</td>
+      <td class="td-title" title="${s.t}" style="max-width:140px;font-size:11px">${s.t}${editedMark}</td>
+      <td style="font-family:'Rajdhani',sans-serif;font-size:10px">${s.y}</td>
+      <td><span class="stp ${s.tp==='orig'?'to':s.tp==='cover'?'tc':'tco'}" style="font-size:8px">${s.tp.toUpperCase()}</span></td>
+      <td style="font-family:'Rajdhani',sans-serif;font-size:9px;color:var(--mu2)">${admArt.toUpperCase()}</td>
+      <td style="font-size:10px">${singerBadges||'<span style="color:var(--mu);font-size:9px">—</span>'}</td>
+      <td style="font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--mu)">${s.id||'—'}</td>
+      <td class="td-actions">
+        <button class="btn-edit" onclick="editSong('${admArt}',${idx})">編集</button>
+        <button class="btn-del" onclick="delSong('${admArt}',${idx})">削除</button>
+      </td>
+    </tr>`;
+  }).join('');
+  setTimeout(()=>filtered.forEach(s=>{ if(s.id) applyThumb(s.id); }),100);
+}
+
+// ── エクスポート・リセット ──
 function exportJSON(){
-  const extra=loadExtra();
-  const blob=new Blob([JSON.stringify(extra,null,2)],{type:'application/json'});
+  const data={extra:loadExtra(), edits:loadEdits()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='rkmusic_hub_extra.json'; a.click();
+  a.download='rkmusic_hub_data.json'; a.click();
 }
-function resetData(){
-  if(!confirm('管理画面から追加したデータをすべて削除しますか？\n（組み込みデータは残ります）')) return;
+function resetAllData(){
+  if(!confirm('追加・編集した全データをリセットしますか?\n（組み込みデータは残ります）')) return;
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(STORAGE_EDIT_KEY);
   buildDB();
-  ['kmnz','vesp','xiden','honk'].forEach(art=>{ renderGrid(art); applyFilter(art); document.getElementById('cnt-'+art).textContent=DB[art].length+'曲'; });
+  ['kmnz','vesp','xiden','honk'].forEach(art=>{
+    renderGrid(art); applyFilter(art);
+    document.getElementById('cnt-'+art).textContent=DB[art].length+'曲';
+  });
   refreshAdmList();
 }
 
-// init member select for admin
-document.getElementById('af-member').innerHTML=memberOpts['kmnz'].map(m=>`<option value="${m}">${m}</option>`).join('');
 
 // ══════════════════════════════════════════════════════
 // BOOT
@@ -1329,6 +1624,8 @@ document.getElementById('af-member').innerHTML=memberOpts['kmnz'].map(m=>`<optio
 document.getElementById('mems-kmnz').style.display='';
 document.getElementById('type-kmnz').style.display='flex';
 init();
+// ページ読み込み完了後にサムネイルAPI取得開始
+setTimeout(fetchVisibleThumbs, 300);
 </script>
 </body>
 </html>
